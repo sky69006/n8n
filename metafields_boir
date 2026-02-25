@@ -1,0 +1,2492 @@
+{
+  "name": "Metafields",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        3855
+      ],
+      "id": "cb431180-f2dd-4a1b-910e-146c0933c7f7",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        980
+      ],
+      "id": "2293d9c7-2f16-4e55-90d3-5cdc576edd25",
+      "name": "XML"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/common",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>authenticate</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><string>info@data-forge.be</string></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><struct/></value></param>\n  </params>\n</methodCall>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -740,
+        1330
+      ],
+      "id": "70ab6388-e2cb-4c38-b215-e6da5c76c471",
+      "name": "Uid ophalen Odoo"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": " const xml = $json[\"data\"];\n\n  // Regular expression to extract the value between <int> tags\n  const match = xml.match(/<int>(\\d+)<\\/int>/);\n\n  // Determine the uid value\n  const uid = match ? parseInt(match[1], 10) : 0;\n\n  // Return the uid as a new JSON object\n  return {\n    uid: uid\n  };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        1330
+      ],
+      "id": "6d7f4119-b01e-4031-a90a-66e6dfe55db5",
+      "name": "Uid filter (regex)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><string>res.country</string></value></param>\n    <param><value><string>search_read</string></value></param>\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array><data></data></array> <!-- Empty domain: fetch all -->\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n    <param>\n      <value>\n        <struct>\n         <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <value><string>id</string></value>\n                  <value><string>name</string></value>\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>fr_BE</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        980
+      ],
+      "id": "c2f4ba95-fb2f-46bf-9f18-7511adc3b3fa",
+      "name": "Country FR ophalen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><string>res.country</string></value></param>\n    <param><value><string>search_read</string></value></param>\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array><data></data></array> <!-- Empty domain: fetch all -->\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n    <param>\n      <value>\n        <struct>\n         <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <value><string>id</string></value>\n                  <value><string>name</string></value>\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>en_US</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        1205
+      ],
+      "id": "26064815-46a3-4241-8578-e784f3e082d1",
+      "name": "Country EN ophalen"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "df.product.tag",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "id",
+            "name",
+            "name_fr"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        2855
+      ],
+      "id": "b13d7606-7a1b-4a4f-b4d7-7940a341b6a5",
+      "name": "Get product tags",
+      "alwaysOutputData": true,
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "df.aroma",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "id",
+            "name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        2655
+      ],
+      "id": "bb47982c-5104-47ab-82f5-aaded8e19abf",
+      "name": "Get aromas",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "df.wine.profile",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "name",
+            "name_fr"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        1755
+      ],
+      "id": "5f872d33-1384-45f6-9982-a6df74f9b173",
+      "name": "Wijn profiel",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "df.article.subtype",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "name",
+            "name_fr"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        1955
+      ],
+      "id": "32d1a746-e0b9-4b21-b3f6-7846fe9d2bc7",
+      "name": "Article subtype",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1205
+      ],
+      "id": "b4003f25-062b-453c-97a5-48af06d7b706",
+      "name": "XML1"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "mk.listing",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "mk_id",
+            "product_tmpl_id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        2455
+      ],
+      "id": "9e79f5a5-a379-4ff9-9c54-4a753d13ac33",
+      "name": "Get all mk info",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  return {\n    json: {\n      listing_id_pkey: item.json.id,\n      mk_id: item.json.mk_id,\n      product_tmpl_id: item.json.product_tmpl_id?.[0] || null\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        2455
+      ],
+      "id": "e4e6faed-1663-4c53-9b86-17fb079f4c45",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql",
+        "numberInputs": 10,
+        "query": "SELECT \n  input6.listing_id_pkey,\n  input1.*,\n  input6.mk_id as mk_id,\n  input1.df_article_type as typeProduct\n  FROM input1\n  LEFT JOIN input6 on  input6.product_tmpl_id = input1.id"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        360,
+        1958
+      ],
+      "id": "b9995dc0-914c-4735-a348-56ceb8893db8",
+      "name": "Alle nodige data van Odoo samengooien",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import traceback\n\ndef floatToInteger(sInput):\n    if sInput is None:\n        return None\n    try:\n        float_value = float(sInput)  # Convert input string to float\n        return int(round(float_value))  # Round and convert to int\n    except (ValueError, TypeError):\n        return None  # Return None if conversion fails\n\ndef dateOnly(sInput):\n  if sInput == None or sInput == False:\n    return None\n  else:\n    return sInput[0:10]\n\ndef maalHonderd(nInput):\n  value = nInput * 100\n  rounded_value = round(value, 2)\n  final_value = int(rounded_value) if rounded_value.is_integer() else rounded_value\n  return final_value\n\ndef calcVolume(nInput):\n    if nInput is None:\n        return None\n    try:\n        if hasattr(nInput, \"to_py\"):\n            nInput = nInput.to_py()\n        return float(nInput)\n    except Exception:\n        return None\n\ndef getTax(inputList):\n  output = None    \n  for i in inputList:\n    if output == None:\n      output = alllt[i]\n    else:\n      output = output + ', ' + alllt[t]\n  return output\n\nall_grapev_node = _('Grape variety')\nallGrapeV = {}\nfor a in all_grapev_node.all():\n  aDict = dict(a.json)\n  allGrapeV[aDict['id']] = aDict\n\ndef grapesNoPercent(nIds):\n  sOutput = None\n  for n in nIds:\n    gvField = allGrapeV[n]\n    if gvField['grape_id'] != False:\n      if sOutput == None:\n        sOutput = gvField['grape_id'][1]\n      else:\n        sOutput = sOutput + ', ' + gvField['grape_id'][1]\n  return sOutput\n    \ndef grapesPercent(nIds):\n  sOutput = None\n  for n in nIds:\n    gvField = allGrapeV[n]\n    if gvField['grape_id'] != False:\n      if gvField['percentage'] == False:\n        sLabel = gvField['grape_id'][1]\n      else:\n        sLabel = gvField['grape_id'][1] + ':' + str(gvField['percentage'])\n      if sOutput == None:\n        sOutput = sLabel\n      else:\n        sOutput = sOutput + ', ' + sLabel\n  return sOutput\n    \n# Fetch data from the \"Get product tags\" node correctly in n8n:\nall_tags_node = _(\"Get product tags\").all()\nall_countries_en_node = _(\"All country EN\").all()\nall_countries_fr_node = _(\"All country FR\").all()\nall_countries_nl_node = _(\"All country NL\").all()\nall_subtype_node = _(\"Article subtype\").all()\nall_aromas_node = _(\"Get aromas\").all()\nall_tax_node = _(\"Get tax\").all()\nall_sel_trans_nl_node = _(\"All dropdown NL\").all()\nall_sel_trans_fr_node = _(\"All dropdown FR\").all()\nall_wine_profile_node = _('Wijn profiel').all()\n\nallFieldsTransFr = {}\nallFieldsTransNl = {}\n\nfor v in all_sel_trans_nl_node:\n  vDict = dict(v.json)\n  allFieldsTransNl[vDict['value']] = vDict['name']\n\nfor v in all_sel_trans_fr_node:\n  vDict = dict(v.json)\n  allFieldsTransFr[vDict['value']] = vDict['name']\n  \nalllt = {}\nfor a in all_tax_node:\n  aDict = dict(a.json)\n  alllt[aDict['id']] = aDict['invoice_label']\n\nallWineProfileFr = {}\nfor a in all_wine_profile_node:\n  aDict = dict(a.json)\n  allWineProfileFr[aDict['id']] = aDict['name_fr']\n\nallAromas = {}\nfor a in all_aromas_node:\n  aDict = dict(a.json)\n  allAromas[aDict['id']] = aDict['name']\n\nallTagsFr = {}\nfor a in all_tags_node:\n  aDict = dict(a.json)\n  allTagsFr[aDict['id']] = aDict['name_fr']\n\nallTags = {}\nfor a in all_tags_node:\n  aDict = dict(a.json)\n  allTags[aDict['id']] = aDict['name']\n\nallCountriesEn = {}\nfor a in all_countries_en_node:\n  aDict = dict(a.json)\n  allCountriesEn[int(aDict['id'])] = aDict['name']\n\nallCountriesFr = {}\nfor a in all_countries_fr_node:\n  aDict = dict(a.json)\n  allCountriesFr[int(aDict['id'])] = aDict['name']\n\nallCountriesNl = {}\nfor a in all_countries_nl_node:\n  aDict = dict(a.json)\n  allCountriesNl[int(aDict['id'])] = aDict['name']\n\nvertaalMapFr = {}\nfor v in all_subtype_node:\n  vDict = dict(v.json)\n  vertaalMapFr[vDict['id']] = vDict['name_fr']\n\nsluiting = {}\nsluiting['cork'] = 'Kurk'\nsluiting['screw_cap'] = 'Schroefdop'\nsluiting['capsule'] = 'Capsule'\nsluiting['bottle_cap'] = 'Kroonkurk'\nsluiting['natural_cork'] = 'Natuurkurk'\nsluiting['glass_top'] = 'Glass top'\nsluiting['art_cork'] = 'Kunststofkurk'\nsluiting['musulet'] = 'Muselet'\n\nPTNa = {}\nPTNa['mocktails'] = 'Mocktails'\nPTNa['sober_spirits'] = 'Sober spirits'\nPTNa['napero'] = 'Apero'\nPTNa['virgin_brews'] = 'Virgin brews'\nPTNa['original_beverages'] = 'Original beverages'\nPTNa['non_wines'] = 'Non-wines'\n\nPTNaFR = {}\nPTNaFR['mocktails'] = 'Mocktails'\nPTNaFR['sober_spirits'] = 'Sober spirits'\nPTNaFR['napero'] = 'Apero'\nPTNaFR['virgin_brews'] = 'Virgin brews'\nPTNaFR['original_beverages'] = 'Original beverages'\nPTNaFR['non_wines'] = 'Non-wines'\n\ntaxMap = {}\ntaxMap['[3]'] = '21%'\ntaxMap['[7]'] = '6%'\ntaxMap['[6]'] = '12%'\n\nflesBlikMap = {}\nflesBlikMap['bottle'] = 'fles'\nflesBlikMap['can'] = 'blik'\nflesBlikMap['glass'] = 'glas'\nflesBlikMap['piece'] = 'stuk'\n\nageMap = {}\nageMap['16plus'] = '16+'\nageMap['18plus'] = '18+'\nageMap['21plus'] = '21+'\n\nverPakkingMap = {}\nverPakkingMap['kartonnen doos'] = 'kartonnen doos'\nverPakkingMap['houten kist'] = 'houtenkist'\nverPakkingMap['houtenkist'] = 'houtenkist'\nverPakkingMap['geschenkverpakking'] = 'geschenkverpakking'\nverPakkingMap[None] = None\n\nbMap = []\nbMap.append({'odoofield':'df_wine_profile_id', 'metafield':'wine_profile', 'type':'many2one'})\nbMap.append({'odoofield':'df_wine_profile_id', 'metafield':'wine_profile_fr', 'type':'many2one', 'mapFunction':allWineProfileFr})\n#bMap.append({'odoofield':'df_bottle_content', 'metafield':'volume', 'type':'standard', 'function':calcVolume, 'shType':'number_decimal'})\nbMap.append({'odoofield':'df_bottle_content_id', 'metafield':'volume', 'type':'many2one', 'function':calcVolume, 'shType':'number_decimal'})\n\nbMap.append({'odoofield':'df_drinking_window_starting_year', 'metafield':'drink_window_start', 'type':'standard'})\nbMap.append({'odoofield':'df_drinking_window_ending_year', 'metafield':'drink_window_end', 'type':'standard'})\nbMap.append({'odoofield': 'df_aop_id', 'metafield':'appellation', 'type':'many2one'})\nbMap.append({'odoofield': 'df_aop_id', 'metafield':'appellation_fr', 'type':'many2one'})\nbMap.append({'odoofield':'df_label_type_ids', 'metafield':'label_type', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_label_type_ids', 'metafield':'label_type_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_beer_profile', 'metafield':'beer_profile', 'type':'many2one', 'domain':'beer'})\nbMap.append({'odoofield':'df_beer_profile', 'metafield':'beer_profile_fr', 'type':'many2one', 'domain':'beer', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_spirits_flavour_profile', 'metafield':'flavor_profile', 'domain':'aperitif_spirits', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_beer_taste_profile_ids', 'metafield':'flavor_profile', 'domain':'beer', 'type':'many2many',  'mapFunction':allTags})\nbMap.append({'odoofield':'df_na_flavour_profile', 'metafield':'flavor_profile', 'domain':'non_alcoholic', 'type':'many2many',  'mapFunction':allTags})\nbMap.append({'odoofield': 'country_of_origin', 'metafield':'country_of_origin', 'type':'many2one', 'mapFunction':allCountriesNl})\nbMap.append({'odoofield': 'country_of_origin', 'metafield':'country_of_origin_en', 'type':'many2one', 'mapFunction':allCountriesEn})\nbMap.append({'odoofield': 'country_of_origin', 'metafield':'country_of_origin_fr', 'type':'many2one', 'mapFunction':allCountriesFr})\nbMap.append({'odoofield':'df_wine_region_id', 'metafield':'wine_region', 'type':'many2one'})\nbMap.append({'odoofield':'df_wine_region_id', 'metafield':'wine_region_en', 'type':'many2one'})\nbMap.append({'metafield':'quantity_max', 'type':'fixed', 'val':90, 'shType':'singe_line_text_field'})\nbMap.append({'odoofield':'df_wine_region_id', 'metafield':'wine_region_fr', 'type':'many2one'})\nbMap.append({'odoofield':'df_customer_min_order_qty', 'metafield':'quantity_min', 'type':'standard'})\nbMap.append({'odoofield':'df_customer_recommended', 'metafield':'quantity_recommended', 'type':'standard', 'shType':'number_integer'})\nbMap.append({'odoofield':'df_customer_per_step', 'metafield':'quantity_step', 'type':'standard', 'shType':'number_integer'})\n#bMap.append({'metafield':'quantity_unit', 'type':'fixed', 'val':'fles'})\n#bMap.append({'metafield':'unit', 'type':'fixed', 'val':'fles'})\nbMap.append({'odoofield':'df_article_container', 'metafield':'quantity_unit', 'type':'selection', 'mapFunction':flesBlikMap})\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'wine_type', 'type':'many2one', 'domain':'wine'})\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'spirits_type', 'type':'many2one', 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'spirits_type_fr', 'type':'many2one', 'domain':'aperitif_spirits', 'mapFunction':vertaalMapFr})\n\n#bMap.append({'odoofield':'df_na_product_type', 'metafield':'na_type', 'type':'selection', 'domain':'non_alcoholic', 'mapFunction':PTNa})\n#bMap.append({'odoofield':'df_na_product_type', 'metafield':'na_type_fr', 'type':'selection', 'domain':'non_alcoholic', 'mapFunction':PTNaFR})\nbMap.append({'odoofield':'df_na_product_type_id', 'metafield':'na_type', 'type':'many2one', 'domain':'non_alcoholic'})\nbMap.append({'odoofield':'df_na_product_type_id', 'metafield':'na_type_fr', 'type':'many2one', 'domain':'non_alcoholic'})\n\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'beer_type', 'type':'many2one', 'domain':'beer'})\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'beer_type_fr', 'type':'many2one', 'domain':'beer', 'mapFunction':vertaalMapFr})\nbMap.append({'odoofield':'df_article_subtype_id',  'metafield':'wine_type_en', 'type':'many2one'})\nbMap.append({'odoofield':'df_culinary_tip_ids', 'metafield':'food_pairing', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_culinary_tip_ids', 'metafield':'food_pairing_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_label_type_ids', 'metafield':'label_type', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_label_type_ids', 'metafield':'label_type_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_grape_variety_ids', 'metafield':'grape_variety', 'type':'many2many', 'function':grapesNoPercent})\nbMap.append({'odoofield':'df_grape_variety_ids', 'metafield':'grape_variety_en', 'type':'many2many', 'function':grapesNoPercent})\nbMap.append({'odoofield':'df_grape_variety_ids', 'metafield':'grape_variety_fr', 'type':'many2many', 'function':grapesNoPercent})\nbMap.append({'odoofield':'df_grape_variety_ids', 'metafield':'grape_variety_percentage', 'type':'many2many', 'function':grapesPercent})\nbMap.append({'odoofield':'df_aroma_ids', 'metafield':'spirits_taste', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field', 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'df_aroma_ids', 'metafield':'na_taste', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field', 'domain':'non_alcoholic', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_article_subtype_id', 'metafield':'wine_type_fr', 'type':'many2one', 'mapFunction':vertaalMapFr, 'domain':'wine'})\n\n#bMap.append({'odoofield':'df_age_restriction', 'metafield':'age_restriction', 'type':'selection', 'mapFunction':ageMap})\nbMap.append({'odoofield':'df_age_restriction_id', 'metafield':'age_restriction', 'type':'many2one'})\n\nbMap.append({'odoofield':'taxes_id', 'metafield':'btw_code', 'type':'selection', 'function':getTax})\nbMap.append({'odoofield':'df_tannines_id', 'metafield':'tannines', 'type':'many2one'})\nbMap.append({'odoofield':'df_bottle_type_id', 'metafield':'wine_bottle_type', 'type':'many2one'})\nbMap.append({'odoofield':'df_aromas_fruit_vegetables_ids', 'metafield':'fruits', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field'})\nbMap.append({'odoofield':'df_aromas_terroir_ids', 'metafield':'terroir', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field'})\nbMap.append({'odoofield':'df_aromas_flowers_herbs_ids', 'metafield':'herbs', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field'})\nbMap.append({'odoofield':'df_aromas_vinification_ids', 'metafield':'vinification', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field'})\nbMap.append({'odoofield':'df_aroma_evolution_ids', 'metafield':'evolution', 'type':'many2many', 'mapFunction':allAromas, 'shType':'list.single_line_text_field'})\nbMap.append({'odoofield':'df_wine_color_ids', 'metafield':'wine_color', 'type':'many2many', 'mapFunction':allTags})\n\n#bMap.append({'odoofield':'df_storage_temperature', 'metafield':'storage_temp', 'type':'selection', 'mapFunction':allFieldsTransNl})\n#bMap.append({'odoofield':'df_serving_temperature', 'metafield':'serve_temp', 'type':'selection', 'mapFunction':allFieldsTransNl})\nbMap.append({'odoofield':'df_storage_temperature_id', 'metafield':'storage_temp', 'type':'many2one'})\nbMap.append({'odoofield':'df_serving_temperature_id', 'metafield':'serve_temp', 'type':'many2one'})\n\nbMap.append({'odoofield':'df_alcohol_percentage', 'metafield':'alcoholpercentage', 'type':'standard', 'function':maalHonderd})\nbMap.append({'odoofield':'df_glass_type_id', 'metafield':'pref_glass', 'type':'many2one'})\nbMap.append({'odoofield':'df_drink_occasion_ids', 'metafield':'occasion', 'type':'many2many', 'mapFunction':allTags})\n\n#bMap.append({'odoofield':'df_classification', 'metafield':'classification', 'type':'standard'})\nbMap.append({'odoofield':'df_classification_id', 'metafield':'classification', 'type':'many2one'})\n\n\nbMap.append({'odoofield':'df_wine_domain_txt', 'metafield':'producer', 'type':'standard', 'domain':'wine'})\nbMap.append({'odoofield':'df_wine_domain_txt', 'metafield':'producer_fr', 'type':'standard', 'domain':'wine'})\nbMap.append({'odoofield':'df_producer', 'metafield':'producer', 'type':'standard', 'domain':'non_alcoholic'})\nbMap.append({'odoofield':'df_producer', 'metafield':'producer', 'type':'standard', 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'df_producer', 'metafield':'producer', 'type':'standard', 'domain':'beer'})\nbMap.append({'odoofield':'df_certificate', 'metafield':'labels', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_certificate', 'metafield':'labels_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_certificate', 'metafield':'labels_en', 'type':'many2many', 'mapFunction':allTags})\n\n#bMap.append({'odoofield':'df_type_of_closure', 'metafield':'closure', 'type':'selection', 'mapFunction':sluiting})\nbMap.append({'odoofield':'df_type_of_closure_id', 'metafield':'closure', 'type':'many2one'})\n\nbMap.append({'odoofield':'df_spirits_aging', 'metafield':'aging_fr', 'type':'many2one', 'mapFunction':allTagsFr, 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'df_spirits_aging', 'metafield':'aging', 'type':'many2one', 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'create_date', 'metafield':'production', 'type':'standard', 'function':dateOnly})\nbMap.append({'odoofield':'df_insert_date_boir', 'metafield':'production', 'type':'standard', 'function':dateOnly})\nbMap.append({'odoofield':'df_article_type', 'metafield':'main_category', 'type':'selection', 'mapFunction':allFieldsTransNl})\nbMap.append({'odoofield':'df_article_type', 'metafield':'main_category_fr', 'type':'selection', 'mapFunction':allFieldsTransFr})\n#bMap.append({'odoofield':'id', 'metafield':'packaging', 'type':'standard', 'mapFunction':allPackage})\n#bMap.append({'odoofield':'id', 'metafield':'packaging_quantity', 'type':'standard', 'shType':'number_integer', 'mapFunction':allQuant})\n\n#bMap.append({'odoofield':'df_cuvee', 'metafield':'cuvee', 'type':'standard'})\nbMap.append({'odoofield':'df_cuvee_id', 'metafield':'cuvee', 'type':'many2one'})\n\nbMap.append({'odoofield':'df_year', 'metafield':'year', 'type':'standard'})\nbMap.append({'odoofield':'df_best_wine_period_year', 'metafield':'period_wine', 'type':'standard'})\nbMap.append({'odoofield':'df_avg_critics_score', 'metafield':'boir_score', 'type':'standard', 'shType':'number_integer', 'function':floatToInteger})\nbMap.append({'odoofield':'df_is_comingsoon', 'metafield':'coming_soon', 'type':'boolean', 'shType':'boolean'})\nbMap.append({'odoofield':'df_is_primeur', 'metafield':'is_primeur', 'type':'boolean', 'shType':'boolean'})\nbMap.append({'odoofield':'df_original_packaging', 'metafield':'collect_go', 'type':'boolean', 'shType':'boolean'})\nbMap.append({'odoofield':'df_is_alcoholic', 'metafield':'alcoholisch_na', 'type':'boolean', 'shType':'boolean'})\nbMap.append({'odoofield':'list_price', 'metafield':'salesprice', 'shType':'number_decimal', 'type':'standard', 'namespace':'odoo'})\nbMap.append({'odoofield':'df_vineyard_choice_ids', 'metafield':'vineyard', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_production_choice_ids', 'metafield':'aging', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_production_choice_ids', 'metafield':'aging_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_mouth_sentiment_ids', 'metafield':'spirits_mouthfeeling', 'type':'many2many', 'domain':'aperitif_spirits'})\nbMap.append({'odoofield':'df_mouth_sentiment_ids', 'metafield':'beer_mouthfeeling', 'type':'many2many', 'domain':'beer', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_beer_aroma_taste_ids', 'metafield':'beer_taste', 'type':'many2many', 'shType':'list.single_line_text_field', 'domain':'beer', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_ingredients', 'metafield':'na_ingredients', 'type':'standard', 'shType':'list.single_line_text_field', 'domain':'non_alcoholic'})\nbMap.append({'odoofield':'df_beer_specials_ids', 'metafield':'specials', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_beer_grain_variety_ids', 'metafield':'grain_variety', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_beer_hop_variety_ids', 'metafield':'hop_variety', 'type':'many2many', 'mapFunction':allTags})\n\n#bMap.append({'odoofield':'df_beer_color_list', 'metafield':'beer_color', 'type':'many2one'})\nbMap.append({'odoofield':'df_beer_color_id', 'metafield':'beer_color', 'type':'many2one'})\n\nbMap.append({'odoofield':'df_brewery_partner_id', 'metafield':'brewer_name', 'type':'many2one'})\nbMap.append({'odoofield':'df_na_flavour_profile', 'metafield':'flavor_profile_fr', 'type':'many2many', 'mapFunction':allTagsFr})\nbMap.append({'odoofield':'df_spirits_mouth_feeling_profile', 'metafield':'spirits_mouthfeeling', 'type':'many2many', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_spirits_ingredients_ids', 'metafield':'spirits_ingredients', 'type':'many2many', 'shType':'list.single_line_text_field', 'mapFunction':allTags})\nbMap.append({'odoofield':'df_packaging', 'metafield':'packaging', 'type':'standard', 'shType':'single_line_text_field', 'mapFunction':verPakkingMap})\n\nimport json\n\ndef mapField(sInput, sTypeProduct):\n    return [b for b in bMap if b['type'] != 'fixed' and b['odoofield'].lower() == sInput.lower() and ('domain' not in b or b['domain'] == sTypeProduct)]\n\ndef getValue(field, value):\n  v = value\n  if field['type'] == 'selection':\n    if 'mapFunction' in field:\n      mapFunc = field['mapFunction']\n      v = mapFunc[value]\n    elif 'function' in field:\n      func = field['function']\n      v = func(value)\n    else:\n      v = value\n  elif 'function' in field and field['type'] != 'many2one':\n    func = field['function']\n    v = func(value)\n  elif field['type'] == 'many2one':\n    if value:\n      v = value[1]\n    if 'function' in field and value:\n      func = field['function']\n      v = func(v)\n    if 'mapFunction' in field and value:\n      mapFunc = field['mapFunction']\n      v = mapFunc[value[0]]\n    if value == False:\n      v = ''\n  elif field['type'] == 'many2many':\n    v = None\n    if value is not None:\n      for p in value:\n        fnc = field['mapFunction']\n        \n        if fnc[p] == False:\n          continue\n        \n        if v is None:\n          v = str(fnc[p])     \n        else:\n          v = v + ',' + str(fnc[p])\n  else:\n    if 'mapFunction' in field:\n      mapFunc = field['mapFunction']\n      if v in mapFunc.keys():\n        v = mapFunc[v]\n  return v\n  \ndef getCompValue(sField):\n  if isinstance(sField, int):\n    formatted = \"{:.1f}\".format(sField)\n    return formatted\n  elif isinstance(sField, float):\n    return str(sField)\n  else:\n    return str(sField)\n  return sField\n\ndef transFormItem(item):\n\n    sOutput = []\n    for key, value in item.items():\n      try:\n          mappedField = mapField(key, item['typeProduct'])\n          if mappedField != []:\n            for m in mappedField:\n              v = getValue(m, value)\n\n              if v in [None, \"\", [], {}]:\n                v = None\n              \n              fieldCopy = m.copy()\n              fieldCopy['value'] = v\n              \n              if 'mapFunction' in fieldCopy.keys():\n                fieldCopy.pop('mapFunction')\n              fieldCopy['varTypeOdoo'] = str(type(v).__name__)\n              fieldCopy['compValOdoo'] = getCompValue(v)\n              fieldCopy['isEmpty'] = (v is None)\n              sOutput.append(fieldCopy)\n      except Exception as e:\n        raise Exception(\"Fout bij veld \" + str(key) + \"\\n\" + traceback.format_exc())\n        \n    for b in bMap:\n      if b['type'] == 'fixed':\n        mF = {'metafield':b['metafield'], 'value':b['val']}\n        if 'shType' in b.keys():\n          mF['shType'] = b['shType']\n        mF['varTypeOdoo'] = str(type(b['val']).__name__)\n        mF['compValOdoo'] = getCompValue(b['val'])\n        mF['isEmpty'] = False\n        sOutput.append(mF)\n    return {'metafields': sOutput}\n\nsOutput = []\n\nfor item in _input.all():\n    itemJson = dict(item.json)\n    if 'success' in itemJson.keys():\n      continue\n  \n    itemPython = dict(item.json).copy()\n    if 'success' in itemPython.keys():\n      continue\n  \n    #sOutput.append(itemPython)\n\n    \n    transformed = transFormItem(itemPython)\n    #transformed = {}\n    transformed['mk_id'] = itemPython['mk_id']\n    transformed['namespace'] = 'boir'\n    transformed['odooid'] = itemPython['id']\n    sOutput.append(transformed)\n\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        1805
+      ],
+      "id": "2e9424c8-d5fa-49e9-801d-75671a483c57",
+      "name": "Transformeren voor Shopify"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "df.grape.variety",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "display_name",
+            "grape_id",
+            "id",
+            "percentageLess",
+            "percentage",
+            "percentageString",
+            "product_template_id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -740,
+        3055
+      ],
+      "id": "f9c7b547-e2dd-432e-92f1-46b2cc6fb01e",
+      "name": "Grape variety",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "account.tax",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "invoice_label"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        3055
+      ],
+      "id": "4a50136b-cb7a-4730-b836-810b54a5d0fe",
+      "name": "Get tax",
+      "executeOnce": true,
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><string>ir.model.fields.selection</string></value></param>\n    <param><value><string>search_read</string></value></param>\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array>\n                <data>\n                  <value>\n                    <array>\n                      <data>\n                        <value><string>field_id</string></value>\n                        <value><string>in</string></value>\n                        <value>\n                          <array>\n                            <data>\n                              <value><int>14032</int></value>\n                              <value><int>14058</int></value>\n                              <value><int>14059</int></value>\n                            </data>\n                          </array>\n                        </value>\n                      </data>\n                    </array>\n                  </value>\n                </data>\n              </array>\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n    <param>\n      <value>\n        <struct>\n          <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <value><string>id</string></value>\n                  <value><string>name</string></value>\n                  <value><string>value</string></value>\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>nl_BE</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        1405
+      ],
+      "id": "d5f6bd5a-e6ea-4591-abc8-b2458db4ae8d",
+      "name": "Dropdown waardes NL ophalen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><string>ir.model.fields.selection</string></value></param>\n    <param><value><string>search_read</string></value></param>\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array>\n                <data>\n                  <value>\n                    <array>\n                      <data>\n                        <value><string>field_id</string></value>\n                        <value><string>in</string></value>\n                        <value>\n                          <array>\n                            <data>\n                              <value><int>14032</int></value>\n                              <value><int>14058</int></value>\n                              <value><int>14059</int></value>\n                            </data>\n                          </array>\n                        </value>\n                      </data>\n                    </array>\n                  </value>\n                </data>\n              </array>\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n    <param>\n      <value>\n        <struct>\n          <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <value><string>id</string></value>\n                  <value><string>name</string></value>\n                  <value><string>value</string></value>\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>fr_BE</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        1605
+      ],
+      "id": "4d68b786-11a5-4633-a33d-a239b989c4ef",
+      "name": "Dropdown waardes FR ophalen"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1405
+      ],
+      "id": "8a2cb68b-baf3-43e3-8e81-3e4c015f2588",
+      "name": "XML2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1605
+      ],
+      "id": "9c718585-858c-4972-93c4-5db00d3bf342",
+      "name": "XML3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const countries = $json.methodResponse?.params?.param?.value?.array?.data?.value || [];\n\nconst results = countries.map(entry => {\n  const members = entry.struct?.member || [];\n  const country = {};\n\n  for (const m of members) {\n    const key = m.name;\n    const val = m.value.string || m.value.int || null;\n\n    if (key === 'id' || key === 'name') {\n      country[key] = val;\n    }\n  }\n\n  return { json: country };\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        980
+      ],
+      "id": "349bc805-1586-49e9-b4b3-b03f170416ba",
+      "name": "All country FR"
+    },
+    {
+      "parameters": {
+        "jsCode": "const countries = $json.methodResponse?.params?.param?.value?.array?.data?.value || [];\n\nconst results = countries.map(entry => {\n  const members = entry.struct?.member || [];\n  const country = {};\n\n  for (const m of members) {\n    const key = m.name;\n    const val = m.value.string || m.value.int || null;\n\n    if (key === 'id' || key === 'name') {\n      country[key] = val;\n    }\n  }\n\n  return { json: country };\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        1205
+      ],
+      "id": "ed2d2b91-2cdc-4fd3-bfeb-094a5f17a3c9",
+      "name": "All country EN"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "v = dict(_input.item.json)\nsOutput = []\n\nLList = v['methodResponse']['params']['param']['value']['array']['data']['value']\n\nfor i in LList:\n    sObject = {}\n    members = i['struct']['member']\n    for m in members:\n        name = m['name']\n        val = m['value'].get('string') or m['value'].get('int')\n        if name in ['name', 'value', 'id']:\n            sObject[name] = val\n    sOutput.append(sObject)\n\nreturn sOutput\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        1405
+      ],
+      "id": "81b7371d-5c58-4beb-95d3-a45ac45423c1",
+      "name": "All dropdown NL"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "v = dict(_input.item.json)\nsOutput = []\n\nLList = v['methodResponse']['params']['param']['value']['array']['data']['value']\n\nfor i in LList:\n    sObject = {}\n    members = i['struct']['member']\n    for m in members:\n        name = m['name']\n        val = m['value'].get('string') or m['value'].get('int')\n        if name in ['name', 'value', 'id']:\n            sObject[name] = val\n    sOutput.append(sObject)\n\nreturn sOutput\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        1605
+      ],
+      "id": "a44605ef-7fb6-4e4e-ba95-ad82f97e6050",
+      "name": "All dropdown FR"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2120,
+        2030
+      ],
+      "id": "be58722a-97d5-43d9-a7aa-84a95dde3cac",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const afterValue = $json.endCursor ?? null;\n\nreturn {\n  \"first\": 250,\n  \"after\": afterValue,\n  \"ownerType\": \"PRODUCT\"\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -740,
+        2205
+      ],
+      "id": "9a26a2f6-ec33-470d-ba3f-4673ed650996",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c13d787a-cf64-4d8d-9999-0aa5d6800330",
+              "name": "hasNextPage",
+              "value": "={{ $json.data.metafieldDefinitions.pageInfo.hasNextPage }}",
+              "type": "boolean"
+            },
+            {
+              "id": "af9ba91e-c398-4540-ac04-d5907e852387",
+              "name": "endCursor",
+              "value": "={{ $json.data.metafieldDefinitions.pageInfo.endCursor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -300,
+        2130
+      ],
+      "id": "ea3f4cfa-cb9d-4aac-a544-af0faf91c14f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2747b73c-963f-4d90-9ba6-0a062380a3fe",
+              "leftValue": "={{ $json.hasNextPage }}",
+              "rightValue": "={{ $json.hasNextPage }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        2205
+      ],
+      "id": "937178eb-0781-48ad-bb78-6e62a8c6b2ff",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://boir-shop.myshopify.com/admin/api/2024-07/graphql.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"query\": \"query metafieldDefinitions($first: Int!, $after: String, $ownerType: MetafieldOwnerType!) { metafieldDefinitions(first: $first, after: $after, ownerType: $ownerType) { pageInfo { hasNextPage endCursor } edges { node { namespace key name description type { name }} } } }\",\n  \"variables\": {\n    \"first\": {{ $json.first }},\n    \"after\": {{ JSON.stringify($json.after) }},\n    \"ownerType\": \"{{ $json.ownerType }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -520,
+        2130
+      ],
+      "id": "a1539f0d-7ad1-4673-b8c7-48d0f3c2f897",
+      "name": "Metafields def"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "all_odoo_data_node = _(\"Transformeren voor Shopify\").all()\nall_field_def_node = _(\"Metafields def\").all()\nall_metafields_data_node_graphql = _(\"Metafields ophalen 2\").all()\n\ndef extract_shopify_id(gid: str) -> str:\n    return gid.split('/')[-1]\n\ndef getCompVal(sInput):\n  if isinstance(sInput, float):\n    return str(sInput)\n  elif isinstance(sInput, int):\n    return str(float(sInput))\n  else:\n    return str(sInput)\n  return sInput\n\nallFieldDef = {}\nfor a in all_field_def_node:\n  aDict = dict(a.json)\n\n  for f in aDict['data']['metafieldDefinitions']['edges']:\n    allFieldDef[f['node']['key']] = f['node']\n\n#for a in allFieldDef.items():\n#  print(a)\n\nallMetasGraph = {}\n\nfor a in all_metafields_data_node_graphql:\n  aDict = dict(a.json)\n  #print(str(aDict))\n  if not aDict.get('data').get('product'):\n    continue\n    \n  productId = extract_shopify_id(aDict['data']['product']['id'])\n\n  for m in aDict['data']['product']['metafields']['edges']:\n    key = m['node'].get('key')\n\n    if productId and key:\n      if productId not in allMetasGraph.keys():\n        allMetasGraph[productId] = {}\n      else:\n        allMetasGraph[productId][key] = m['node']\n\n#for i in allMetasGraph.items():\n#  print(str(i))\n\nsOutput = []\n\n# Verwerk de Odoo data en koppel metafields\nfor a in all_odoo_data_node:\n    aDict = dict(a.json)\n    mk_id = str(aDict['mk_id'])\n    metafields = aDict.get('metafields', [])\n\n    # Voeg metafields van Shopify toe aan de Odoo-data\n    enriched_metafields = []\n    for m in metafields:\n      mdef = allFieldDef.get(m['metafield'])\n      #mdef = allFieldDef[m['metafield']]\n      #print('mdef:')\n      #print(mdef)\n\n      m['def'] = mdef\n      \n      metafield_key = m.get('metafield')\n\n      shopify_metafield_graph = allMetasGraph.get(mk_id, {}).get(metafield_key)\n      if shopify_metafield_graph:\n        m['shopifyValGraph'] = shopify_metafield_graph\n\n      targetType = None\n      if shopify_metafield_graph:\n        targetType = shopify_metafield_graph.get('type')\n      elif mdef:\n        targetType = mdef.get('type').get('name')\n      else:\n        targetType = m.get('shType')\n\n      m['targetType'] = targetType\n        \n      sValue = m.get('value')\n      sValue_str = str(sValue) if sValue is not None else ''\n\n      if shopify_metafield_graph == None:\n        m['isEmptyShop'] = True\n      else:\n        m['isEmptyShop'] = False\n        \n      m['compValShop'] = getCompVal(sValue)\n      \n      shopify_value_str = str(shopify_metafield_graph.get('value')) if shopify_metafield_graph and shopify_metafield_graph.get('value') is not None else ''\n\n      if m['isEmpty'] and m['isEmptyShop']:\n        sAction = 'Donothing'\n      elif m['isEmptyShop'] and not m['isEmpty']:\n        sAction = 'Insert'\n      elif not m['isEmptyShop'] and m['isEmpty']:\n        sAction = 'Delete'\n      elif m['compValShop'] == m['compValOdoo']:\n        sAction = 'Samevalue'\n      else:\n        sAction = 'Update'\n\n      m['action'] = sAction  \n\n    sOutput.append(aDict)\n\n# Resultaat retourneren\nreturn sOutput\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2340,
+        2030
+      ],
+      "id": "19de9689-d029-4825-81ac-a76c7ea36f06",
+      "name": "Decide insert or update"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Loop over input items and add a new field called 'myNewField' to the JSON of each one\nsOutput = []\nfor item in _input.all():\n  itemDict = dict(item.json)\n  \n  if 'success' in itemDict.keys():\n    continue\n  else:\n    sOutput.append(itemDict)\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        2030
+      ],
+      "id": "ac8acd8f-75d0-485b-9d91-d80d11355a2e",
+      "name": "Onnodige runs eruit halen"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "sOutput = []\nfor item in _input.all():\n  mainItem = dict(item.json)\n  for m in mainItem['metafields']:\n    metObj = {}\n    \n    namespace = None\n    type = None\n    if 'shopifyValGraph' in m.keys():\n      namespace = m['shopifyValGraph']['namespace']\n      type = m['shopifyValGraph']['type']\n    elif 'def' in m.keys():\n      namespace = m['def']['namespace']\n      type = m['def']['type']['name']\n    else:\n      namespace = 'boir'\n      if 'shType' in m.keys():\n        type = m['shType']\n      else:\n        type = 'single_line_text_field'\n    metObj['namespace'] = namespace\n    metObj['type'] = type\n    metObj['value'] = m.get('value')\n    \n    metObj['key'] = m['metafield']\n    metObj['ownerId'] = 'gid://shopify/Product/' + str(mainItem['mk_id'])\n    metObj['action'] = m['action']\n\n    #if mainItem['odooid'] == 7594 and m['def']['key'] == 'country_of_origin':\n    #  metObj['type'] = 'number_decimal'\n    \n    if 'shopifyValGraph' in m.keys():\n      metObj['metafieldUrl'] = m['shopifyValGraph']['id']\n    sOutput.append(metObj)\n\n    #if metObj['key'] == 'boir_score':\n    #  metObj['value'] = '80.5'\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        2030
+      ],
+      "id": "24b33db2-ed81-4f1e-8d14-43de2336d8d8",
+      "name": "Transformeren naar graphql"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "Delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3216d3da-c4ea-41fc-8394-63023a09553a"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Delete"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "11551713-f3a7-44cb-b6d9-76be9cdec12d",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "=Donothing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Nothing to do"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9501d4e9-1d22-465d-9d99-7150b4396d96",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "Samevalue",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Same value"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2780,
+        2009
+      ],
+      "id": "aee21fe0-a6c5-48ac-a86f-764b9ebcbae8",
+      "name": "Routen delete of insert/update"
+    },
+    {
+      "parameters": {
+        "batchSize": 20,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3220,
+        2255
+      ],
+      "id": "0a1d9492-34d1-4527-ace3-076507fb7494",
+      "name": "Splitsen in batches"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://boir-shop.myshopify.com/admin/api/2023-04/graphql.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        2305
+      ],
+      "id": "765314c2-fb02-46cb-9b09-bc78c1946d2b",
+      "name": "Insert/update uitvoeren"
+    },
+    {
+      "parameters": {
+        "batchSize": 20,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3220,
+        1855
+      ],
+      "id": "dae4c37b-8675-4556-a6b3-b06bda4a1208",
+      "name": "Splitsen in batches1"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import json\n\nmetafields_list = []\n\nfor a in _input.all():\n    m = dict(a.json)\n  \n    raw_value = str(m['value'])  # Always convert to string\n\n    if \"list\" in m['type']:\n        # Convert comma-separated string to list of strings\n        list_items = [item.strip() for item in raw_value.split(\",\")]\n        sValue = json.dumps(json.dumps(list_items))  # ← double encode!\n    else:\n        sValue = json.dumps(raw_value)  # ← single encode for plain strings\n  \n    metafields_list.append(f\"\"\"\n    {{\n      namespace: \"{m['namespace']}\",\n      key: \"{m['key']}\",\n      type: \"{m['type']}\",\n      value: {sValue},\n      ownerId: \"{m['ownerId']}\"\n    }}\n    \"\"\")\n\n# Join all metafield definitions\nmetafields_str = \",\\n\".join(metafields_list)\n\n# Final GraphQL mutation string\nquery = f\"\"\"\nmutation {{\n  metafieldsSet(metafields: [\n    {metafields_str}\n  ]) {{\n    metafields {{\n      id\n      namespace\n      key\n      value\n      owner {{\n        ... on Product {{\n          id\n        }}\n      }}\n    }}\n    userErrors {{\n      field\n      message\n    }}\n  }}\n}}\n\"\"\"\n\n\n# Output the full GraphQL query\nreturn { \"query\": query }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3440,
+        2230
+      ],
+      "id": "19237810-dc67-4e8a-bd29-cc1737039992",
+      "name": "Rest query I/U opbouwen"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "mutation_blocks = []\n\nfor idx, item in enumerate(_input.all()):\n    metafield_id = item[\"json\"][\"metafieldUrl\"]\n    mutation_blocks.append(f\"\"\"\n    delete{idx}: metafieldDelete(input: {{ id: \"{metafield_id}\" }}) {{\n      deletedId\n      userErrors {{\n        field\n        message\n      }}\n    }}\n    \"\"\")\n\n# Join into one mutation block\nmutation_body = \"\\n\".join(mutation_blocks)\n\n# Wrap in mutation {}\nquery = f\"\"\"\nmutation {{\n{mutation_body}\n}}\n\"\"\"\n\n# Output\nreturn { \"query\": query.strip() }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3440,
+        1680
+      ],
+      "id": "c7529344-67f0-4885-888f-aebcff928d14",
+      "name": "Rest query delete opbouwen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://boir-shop.myshopify.com/admin/api/2023-04/graphql.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.query }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3660,
+        1680
+      ],
+      "id": "5f44e372-0a87-40a7-a813-e5fcf20b0279",
+      "name": "Delete uitvoeren"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "httpMethod": [
+          "GET"
+        ],
+        "path": "97359429-2f84-449b-bcae-1fb9645230f3",
+        "authentication": "basicAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        2655
+      ],
+      "id": "edfaf435-7170-407f-9281-e8a0adfc14a3",
+      "name": "Webhook",
+      "webhookId": "97359429-2f84-449b-bcae-1fb9645230f3",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "htAiREmngbYoSuCR",
+          "name": "dataforge standard credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3440,
+        1880
+      ],
+      "id": "8e327857-5679-4f7f-9eb2-9493197cfcbc",
+      "name": "Einde",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "product.template",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": "={{ ['country_of_origin',\n 'create_date',\n 'df_age_restriction_id',\n 'df_alcohol_percentage',\n 'df_aop_id',\n 'df_aroma_evolution_ids',\n 'df_aroma_ids',\n 'df_aromas_flowers_herbs_ids',\n 'df_aromas_fruit_vegetables_ids',\n 'df_aromas_terroir_ids',\n 'df_aromas_vinification_ids',\n 'df_article_subtype_id',\n 'df_article_type',\n 'df_avg_critics_score',\n 'df_beer_aroma_taste_ids',\n 'df_beer_color_id',\n 'df_beer_grain_variety_ids',\n 'df_beer_hop_variety_ids',\n 'df_beer_profile',\n 'df_beer_specials_ids',\n 'df_beer_taste_profile_ids',\n 'df_best_wine_period_year',\n 'df_bottle_type_id',\n 'df_brewery_partner_id',\n 'df_certificate',\n 'df_classification_id',\n 'df_culinary_tip_ids',\n 'df_customer_min_order_qty',\n 'df_customer_per_step',\n 'df_customer_recommended',\n 'df_cuvee_id',\n 'df_drink_occasion_ids',\n 'df_drinking_window_ending_year',\n 'df_drinking_window_starting_year',\n 'df_glass_type_id',\n 'df_grape_variety_ids',\n 'df_ingredients',\n 'df_insert_date_boir',\n 'df_is_alcoholic',\n 'df_is_comingsoon',\n 'df_is_primeur',\n 'df_label_type_ids',\n 'df_mouth_sentiment_ids',\n 'df_na_flavour_profile',\n 'df_na_product_type_id',\n 'df_original_packaging',\n 'df_producer',\n 'df_production_choice_ids',\n 'df_serving_temperature_id',\n 'df_spirits_aging',\n 'df_spirits_flavour_profile',\n 'df_spirits_ingredients_ids',\n 'df_spirits_mouth_feeling_profile',\n 'df_storage_temperature_id',\n 'df_tannines_id',\n 'df_type_of_closure_id',\n 'df_vineyard_choice_ids',\n 'df_wine_color_ids',\n 'df_wine_domain_txt',\n 'df_wine_region_id',\n 'df_year',\n 'list_price',\n 'taxes_id'] }}"
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "default_code",
+              "operator": "like",
+              "value": "60000"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        120
+      ],
+      "id": "a661d9b8-5b58-4516-bba8-3767134a38d9",
+      "name": "Get 10 primeurs1",
+      "notesInFlow": false,
+      "credentials": {
+        "odooApi": {
+          "id": "GnmpLusBSNW79WBu",
+          "name": "Odoo account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "product.template",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": "={{ ['country_of_origin',\n 'create_date',\n'default_code',\n'df_wine_profile_id',\n'df_bottle_content_id',\n 'df_age_restriction_id',\n 'df_alcohol_percentage',\n 'df_aop_id',\n 'df_aroma_evolution_ids',\n 'df_aroma_ids',\n 'df_aromas_flowers_herbs_ids',\n 'df_aromas_fruit_vegetables_ids',\n 'df_aromas_terroir_ids',\n 'df_aromas_vinification_ids',\n 'df_article_subtype_id',\n 'df_article_type',\n 'df_avg_critics_score',\n 'df_beer_aroma_taste_ids',\n 'df_beer_color_id',\n 'df_beer_grain_variety_ids',\n 'df_beer_hop_variety_ids',\n 'df_beer_profile',\n 'df_beer_specials_ids',\n 'df_beer_taste_profile_ids',\n 'df_best_wine_period_year',\n 'df_bottle_type_id',\n 'df_brewery_partner_id',\n 'df_certificate',\n 'df_classification_id',\n 'df_culinary_tip_ids',\n 'df_customer_min_order_qty',\n 'df_customer_per_step',\n 'df_customer_recommended',\n 'df_cuvee_id',\n 'df_drink_occasion_ids',\n 'df_drinking_window_ending_year',\n 'df_drinking_window_starting_year',\n 'df_glass_type_id',\n 'df_grape_variety_ids',\n 'df_ingredients',\n 'df_insert_date_boir',\n 'df_is_alcoholic',\n 'df_is_comingsoon',\n 'df_is_primeur',\n 'df_label_type_ids',\n 'df_mouth_sentiment_ids',\n 'df_na_flavour_profile',\n 'df_na_product_type_id',\n 'df_original_packaging',\n 'df_producer',\n 'df_production_choice_ids',\n 'df_serving_temperature_id',\n 'df_spirits_aging',\n 'df_spirits_flavour_profile',\n 'df_spirits_ingredients_ids',\n 'df_spirits_mouth_feeling_profile',\n 'df_storage_temperature_id',\n 'df_tannines_id',\n 'df_type_of_closure_id',\n 'df_vineyard_choice_ids',\n 'df_wine_color_ids',\n 'df_wine_domain_txt',\n 'df_wine_region_id',\n 'df_year',\n 'list_price',\n 'taxes_id',\n'packaging_ids',\n'df_packaging',\n'df_article_container',\n'description_sale'] }}"
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "id",
+              "value": "={{$json[\"query\"][\"product_ids\"]}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        140,
+        3355
+      ],
+      "id": "6c01c179-3199-4b9b-8847-c52cee062540",
+      "name": "Get up te daten wijnen",
+      "notesInFlow": false,
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb367b2b-5bb3-441a-823a-4abb992b3c96",
+              "leftValue": "={{ $json.mk_id }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        2105
+      ],
+      "id": "3310cf63-98cc-42e6-b091-fd302d9759b9",
+      "name": "Producten zonder MK id eruit halen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://boir-shop.myshopify.com/admin/api/2024-07/graphql.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"query\": \"query getProduct($PRODUCT_GID: ID!) {\\n  product(id: $PRODUCT_GID) {\\n    id\\n    metafields(first: 250) {\\n      edges {\\n        node {\\n          namespace\\n          key\\n          value\\n          type\\n          id\\n          ownerType\\n        }\\n      }\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"PRODUCT_GID\": \"gid://shopify/Product/{{ $json.mk_id }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1460,
+        2455
+      ],
+      "id": "85894986-c91e-47e4-b08d-b5618b93b98b",
+      "name": "Metafields ophalen 2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3220,
+        2605
+      ],
+      "id": "af881a7d-133f-421c-b428-1286b9ac5bd0",
+      "name": "MkNotFound"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        3880,
+        1880
+      ],
+      "id": "97f034d7-f701-4159-95fb-42d31883a413",
+      "name": "Respond to Webhook",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Loop over input items and add a new field called 'myNewField' to the JSON of each one\nsOutput = []\nfor item in _input.all():\n  itemDict = dict(item.json)\n\n  hasTaxes = False\n  if itemDict.get('taxes_id'):\n    hasTaxes = True\n\n  itemDict['is_tax_empty'] = not hasTaxes\n  \n  if not 'value' in itemDict.keys():\n    sOutput.append(itemDict)\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        2105
+      ],
+      "id": "3b0e269c-36c9-4839-b680-f386a6fab1fd",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "# Loop over input items and add a new field called 'myNewField' to the JSON of each one\nsOutput = []\nfor item in _input.all():\n  itemDict = dict(item.json)\n  \n  if 'success' in itemDict.keys():\n    continue\n  else:\n    sOutput.append(itemDict)\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3000,
+        2605
+      ],
+      "id": "c3c2ba60-9d05-4df5-a819-e2a4218fd1de",
+      "name": "Onnodige runs eruit halen1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33cb98cf-d054-4ce0-b71d-313221aba489",
+              "leftValue": "={{ $json.data.product }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1900,
+        2455
+      ],
+      "id": "e283c186-43b7-49d1-bd1e-9c8465614db3",
+      "name": "Mk ids die niet bestaan in Odoo eruit halen"
+    },
+    {
+      "parameters": {
+        "jsCode": "const productData = $items(\"Onnodige runs eruit halen\");\nconst currentItems = items;\n\nreturn currentItems.map((item, index) => {\n  const mk_id = productData[index]?.json?.mk_id ?? null;\n  const default_code = productData[index]?.json?.default_code ?? null;\n  const odooId = productData[index]?.json?.id ?? null;\n\n  return {\n    json: {\n      ...item.json,\n      mk_id,\n      default_code,\n      odooId,\n      product_found: !!item.json.data?.product,\n      message: item.json.data?.product ? \"Product found\" : \"Product not found\"\n    }\n  };\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        2455
+      ],
+      "id": "0658759b-a7c4-43dd-a422-106db7a98a82",
+      "name": "Items met MK"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "sOutput = []\n\n# Try fetching from MkNotFound module\ntry:\n    all_no_mk_node = _(\"MkNotFound\").all()\n    for item in all_no_mk_node:\n        itemDict = dict(item.json)\n        if 'success' in itemDict:\n            continue\n        sOutput.append({\n            'Status': 'error',\n            'Text': itemDict['default_code'] + ' heeft geen marketplace ID',\n            'IdOdoo': itemDict['id']\n        })\nexcept Exception:\n    # Node probably didn't execute; skip it\n    pass\n\nhasErrors = False\ntry:\n    all_insert_update_node = _(\"Splitsen in batches\").all()\n\n    for item in all_insert_update_node:\n      itemDict = dict(item.json)\n      print('Data:')\n      print(itemDict.get('data').get('metafieldsSet', {})\n            .get('userErrors', []))\n      errors = (\n        itemDict.get('data', {})\n            .get('metafieldsSet', {})\n            .get('userErrors', [])\n      )\n\n      if errors:\n        hasErrors = True\n        sOutput.append({\n            'Status': 'error',\n            'Text': '; '.join([e.get('message', '') for e in errors]),\n            'IdOdoo': itemDict.get('idOdoo', 'N/A')\n        })\nexcept Exception as e:\n    print(\"Error processing Insert/update uitvoeren:\", e)\n  \nif hasErrors == True:\n  return sOutput\n\n\n# Try fetching from Items met MK module\ntry:\n    other_nodes = _(\"Items met MK\").all()\n    for item in other_nodes:\n        itemDict = dict(item.json)\n\n        if itemDict.get('product_found') is True:\n            sOutput.append({\n                'Status': 'success',\n                'Text': itemDict['default_code'] + ' met success upgedate',\n                'IdOdoo': itemDict['odooId']\n            })\n\n        elif itemDict.get('product_found') is False:\n            sOutput.append({\n                'Status': 'error',\n                'Text': itemDict['default_code'] + ' heeft wel marketplace ID in Odoo maar deze ID ' + itemDict['mk_id'] + ' bestaat niet in Shopify',\n                'IdOdoo': itemDict['odooId']\n            })\nexcept Exception:\n    # Same here — if not executed, just skip\n    pass\n\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3660,
+        1880
+      ],
+      "id": "48d62a93-57a1-40c2-a7d8-ecef742143e8",
+      "name": "Eindrapport maken",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "content": "2908\n\n7594"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        300
+      ],
+      "id": "285f29e8-261e-43e8-bebf-ed3e9caf0cb2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/common",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>authenticate</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><string>info@data-forge.be</string></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><struct/></value></param>\n  </params>\n</methodCall>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -520,
+        380
+      ],
+      "id": "600b24d1-2585-4a86-a483-15c0a7e169d5",
+      "name": "Uid ophalen Odoo1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": " const xml = $json[\"data\"];\n\n  // Regular expression to extract the value between <int> tags\n  const match = xml.match(/<int>(\\d+)<\\/int>/);\n\n  // Determine the uid value\n  const uid = match ? parseInt(match[1], 10) : 0;\n\n  // Return the uid as a new JSON object\n  return {\n    uid: uid\n  };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        380
+      ],
+      "id": "fc8ea2e4-1940-4c47-b65a-da94e3baf925",
+      "name": "Uid filter (regex)1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <!-- Replace with your actual values -->\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n\n    <!-- Model and method -->\n    <param><value><string>product.template</string></value></param>\n    <param><value><string>search_read</string></value></param>\n\n    <!-- Domain: filter by IDs -->\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array>\n                <data>\n                  <value>\n                    <array>\n                      <data>\n                        <value><string>id</string></value>\n                        <value><string>in</string></value>\n                        <value>\n                          <array>\n                            <data>\n                                {{ $node[\"WebhookMulti\"].json[\"body\"][\"prodIds\"].map(id => `<value><int>${id}</int></value>`).join('') }}\n                                     </data>\n                          </array>\n                        </value>\n                      </data>\n                    </array>\n                  </value>\n                </data>\n              </array>\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n\n    <!-- Options: fields and context -->\n    <param>\n      <value>\n        <struct>\n          <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <!-- Begin field list -->\n                  <value><string>name</string></value>\n                  <value><string>country_of_origin</string></value>\n                  <value><string>create_date</string></value>\n                  <value><string>default_code</string></value>\n                  <value><string>df_wine_profile_id</string></value>\n                  <value><string>df_bottle_content_id</string></value>\n                  <value><string>df_age_restriction_id</string></value>\n                  <value><string>df_alcohol_percentage</string></value>\n                  <value><string>df_aop_id</string></value>\n                  <value><string>df_aroma_evolution_ids</string></value>\n                  <value><string>df_aroma_ids</string></value>\n                  <value><string>df_aromas_flowers_herbs_ids</string></value>\n                  <value><string>df_aromas_fruit_vegetables_ids</string></value>\n                  <value><string>df_aromas_terroir_ids</string></value>\n                  <value><string>df_aromas_vinification_ids</string></value>\n                  <value><string>df_article_subtype_id</string></value>\n                  <value><string>df_article_type</string></value>\n                  <value><string>df_avg_critics_score</string></value>\n                  <value><string>df_beer_aroma_taste_ids</string></value>\n                  <value><string>df_beer_color_id</string></value>\n                  <value><string>df_beer_grain_variety_ids</string></value>\n                  <value><string>df_beer_hop_variety_ids</string></value>\n                  <value><string>df_beer_profile</string></value>\n                  <value><string>df_beer_specials_ids</string></value>\n                  <value><string>df_beer_taste_profile_ids</string></value>\n                  <value><string>df_best_wine_period_year</string></value>\n                  <value><string>df_bottle_type_id</string></value>\n                  <value><string>df_brewery_partner_id</string></value>\n                  <value><string>df_certificate</string></value>\n                  <value><string>df_classification_id</string></value>\n                  <value><string>df_culinary_tip_ids</string></value>\n                  <value><string>df_customer_min_order_qty</string></value>\n                  <value><string>df_customer_per_step</string></value>\n                  <value><string>df_customer_recommended</string></value>\n                  <value><string>df_cuvee_id</string></value>\n                  <value><string>df_drink_occasion_ids</string></value>\n                  <value><string>df_drinking_window_ending_year</string></value>\n                  <value><string>df_drinking_window_starting_year</string></value>\n                  <value><string>df_glass_type_id</string></value>\n                  <value><string>df_grape_variety_ids</string></value>\n                  <value><string>df_ingredients</string></value>\n                  <value><string>df_insert_date_boir</string></value>\n                  <value><string>df_is_alcoholic</string></value>\n                  <value><string>df_is_comingsoon</string></value>\n                  <value><string>df_is_primeur</string></value>\n                  <value><string>df_label_type_ids</string></value>\n                  <value><string>df_mouth_sentiment_ids</string></value>\n                  <value><string>df_na_flavour_profile</string></value>\n                  <value><string>df_na_product_type_id</string></value>\n                  <value><string>df_original_packaging</string></value>\n                  <value><string>df_producer</string></value>\n                  <value><string>df_production_choice_ids</string></value>\n                  <value><string>df_serving_temperature_id</string></value>\n                  <value><string>df_spirits_aging</string></value>\n                  <value><string>df_spirits_flavour_profile</string></value>\n                  <value><string>df_spirits_ingredients_ids</string></value>\n                  <value><string>df_spirits_mouth_feeling_profile</string></value>\n                  <value><string>df_storage_temperature_id</string></value>\n                  <value><string>df_tannines_id</string></value>\n                  <value><string>df_type_of_closure_id</string></value>\n                  <value><string>df_vineyard_choice_ids</string></value>\n                  <value><string>df_wine_color_ids</string></value>\n                  <value><string>df_wine_domain_txt</string></value>\n                  <value><string>df_wine_region_id</string></value>\n                  <value><string>df_year</string></value>\n                  <value><string>list_price</string></value>\n                  <value><string>taxes_id</string></value>\n                  <value><string>packaging_ids</string></value>\n                  <value><string>df_packaging</string></value>\n                  <value><string>df_article_container</string></value>\n                  <value><string>description_sale</string></value>\n                  <!-- End field list -->\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>nl_BE</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        380
+      ],
+      "id": "576bcec9-6a2a-4ea1-99b7-3231d0407d04",
+      "name": "Multiple products ophalen"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        3000,
+        2255
+      ],
+      "id": "1307b2e3-aea5-4312-b312-1866fcd8af47",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ef5ae496-0f26-4917-b65f-84b2c281648e",
+        "authentication": "basicAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        855
+      ],
+      "id": "927f8b31-7ac5-4be3-9c35-e7c25304a501",
+      "name": "WebhookMulti",
+      "webhookId": "ef5ae496-0f26-4917-b65f-84b2c281648e",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "htAiREmngbYoSuCR",
+          "name": "dataforge standard credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import xml.etree.ElementTree as ET\nimport json\n\ndef parse_odoo_xml(xml_data):\n    root = ET.fromstring(xml_data)\n    records = []\n\n    for struct in root.findall(\".//struct\"):\n        record = {}\n        for member in struct.findall(\"member\"):\n            name = member.find(\"name\").text\n            val_elem = member.find(\"value\")\n\n            if val_elem.find(\"string\") is not None:\n                value = val_elem.find(\"string\").text or \"\"\n            elif val_elem.find(\"int\") is not None:\n                value = int(val_elem.find(\"int\").text)\n            elif val_elem.find(\"double\") is not None:\n                value = float(val_elem.find(\"double\").text)\n            elif val_elem.find(\"boolean\") is not None:\n                value = val_elem.find(\"boolean\").text == \"1\"\n            elif val_elem.find(\"array\") is not None:\n                sub_vals = []\n                for item in val_elem.findall(\".//array/data/value\"):\n                    if item.find(\"int\") is not None:\n                        sub_vals.append(int(item.find(\"int\").text))\n                    elif item.find(\"string\") is not None:\n                        sub_vals.append(item.find(\"string\").text)\n                value = sub_vals\n            else:\n                value = None\n\n            record[name] = value\n        records.append(record)\n\n    return records\n\n# Main loop\nresults = []\nfor item in _input.all():\n    xml_string = item.json[\"data\"]\n    parsed = parse_odoo_xml(xml_string)\n    results.extend(parsed)\n\nreturn results"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        380
+      ],
+      "id": "e2440665-5cd5-4a0c-b23e-b800e24b0542",
+      "name": "Transform to JSON"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "mk.listing.item",
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fieldsList": [
+            "mk_id",
+            "mk_listing_id"
+          ]
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "mk_listing_id",
+              "value": "={{ $json.listing_id_pkey }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        2255
+      ],
+      "id": "ad81fda4-4b74-4c4e-a3f5-34868f0c1776",
+      "name": "Mk varianten ophalen",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "mk.listing.item",
+        "operation": "update",
+        "customResourceId": "={{ $json.pkey }}",
+        "fieldsToCreateOrUpdate": {
+          "fields": [
+            {
+              "fieldName": "is_taxable",
+              "fieldValue": "={{ !$json.is_tax_empty }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        2030
+      ],
+      "id": "bb35df0a-a8ed-4cea-8b09-1a9fc7e43bf4",
+      "name": "Odoo",
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "mk_listing_id[0]",
+              "field2": "listing_id_pkey"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1680,
+        2030
+      ],
+      "id": "d962c65f-f3dc-4658-ae55-efb0b4e63016",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "sOutput = []\nfor item in _input.all():\n  itemDict = dict(item.json)\n  sNewItem = {'pkey':itemDict['id'], 'mk_listing_id':itemDict['mk_listing_id']}\n  sOutput.append(sNewItem)\nreturn sOutput"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        2255
+      ],
+      "id": "f081b3e7-d626-40a8-93c2-2c0813000368",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        780
+      ],
+      "id": "9cf43e9d-1181-4000-8953-c52d33b6703b",
+      "name": "XML4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://odoo-ps-psbe-bottlesnv.odoo.com/xmlrpc/2/object",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/xml",
+        "body": "=<?xml version=\"1.0\"?>\n<methodCall>\n  <methodName>execute_kw</methodName>\n  <params>\n    <param><value><string>odoo-ps-psbe-bottlesnv-main-12821942</string></value></param>\n    <param><value><int>{{ $json.uid }}</int></value></param>\n    <param><value><string>DataForgeTeam01</string></value></param>\n    <param><value><string>res.country</string></value></param>\n    <param><value><string>search_read</string></value></param>\n    <param>\n      <value>\n        <array>\n          <data>\n            <value>\n              <array><data></data></array> <!-- Empty domain: fetch all -->\n            </value>\n          </data>\n        </array>\n      </value>\n    </param>\n    <param>\n      <value>\n        <struct>\n         <member>\n            <name>fields</name>\n            <value>\n              <array>\n                <data>\n                  <value><string>id</string></value>\n                  <value><string>name</string></value>\n                </data>\n              </array>\n            </value>\n          </member>\n          <member>\n            <name>context</name>\n            <value>\n              <struct>\n                <member>\n                  <name>lang</name>\n                  <value><string>nl_BE</string></value>\n                </member>\n              </struct>\n            </value>\n          </member>\n        </struct>\n      </value>\n    </param>\n  </params>\n</methodCall>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        780
+      ],
+      "id": "e49ae8a0-0577-4f3b-a9ff-e3f462403881",
+      "name": "Country NL ophalen"
+    },
+    {
+      "parameters": {
+        "jsCode": "const countries = $json.methodResponse?.params?.param?.value?.array?.data?.value || [];\n\nconst results = countries.map(entry => {\n  const members = entry.struct?.member || [];\n  const country = {};\n\n  for (const m of members) {\n    const key = m.name;\n    const val = m.value.string || m.value.int || null;\n\n    if (key === 'id' || key === 'name') {\n      country[key] = val;\n    }\n  }\n\n  return { json: country };\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        780
+      ],
+      "id": "3236d1a7-c56c-4238-9fc4-0f9b184d2d81",
+      "name": "All country NL"
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "product.template",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": "={{ [\"country_of_origin\",\"create_date\",\"default_code\",\"df_wine_profile_id\",\"df_bottle_content_id\",\"df_age_restriction_id\",\"df_alcohol_percentage\",\"df_aop_id\",\"df_aroma_evolution_ids\",\"df_aroma_ids\",\"df_aromas_flowers_herbs_ids\",\"df_aromas_fruit_vegetables_ids\",\"df_aromas_terroir_ids\",\"df_aromas_vinification_ids\",\"df_article_subtype_id\",\"df_article_type\",\"df_avg_critics_score\",\"df_beer_aroma_taste_ids\",\"df_beer_color_id\",\"df_beer_grain_variety_ids\",\"df_beer_hop_variety_ids\",\"df_beer_profile\",\"df_beer_specials_ids\",\"df_beer_taste_profile_ids\",\"df_best_wine_period_year\",\"df_bottle_type_id\",\"df_brewery_partner_id\",\"df_certificate\",\"df_classification_id\",\"df_culinary_tip_ids\",\"df_customer_min_order_qty\",\"df_customer_per_step\",\"df_customer_recommended\",\"df_cuvee_id\",\"df_drink_occasion_ids\",\"df_drinking_window_ending_year\",\"df_drinking_window_starting_year\",\"df_glass_type_id\",\"df_grape_variety_ids\",\"df_ingredients\",\"df_insert_date_boir\",\"df_is_alcoholic\",\"df_is_comingsoon\",\"df_is_primeur\",\"df_label_type_ids\",\"df_mouth_sentiment_ids\",\"df_na_flavour_profile\",\"df_na_product_type_id\",\"df_original_packaging\",\"df_producer\",\"df_production_choice_ids\",\"df_serving_temperature_id\",\"df_spirits_aging\",\"df_spirits_flavour_profile\",\"df_spirits_ingredients_ids\",\"df_spirits_mouth_feeling_profile\",\"df_storage_temperature_id\",\"df_tannines_id\",\"df_type_of_closure_id\",\"df_vineyard_choice_ids\",\"df_wine_color_ids\",\"df_wine_domain_txt\",\"df_wine_region_id\",\"df_year\",\"list_price\",\"taxes_id\",\"packaging_ids\",\"df_packaging\", \"df_article_container\", \"description_sale\"] }}"
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "id",
+              "value": "=7605"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        140,
+        4255
+      ],
+      "id": "25f49cc8-ba3d-4c50-b669-9af920b03dca",
+      "name": "Test wijn HC1",
+      "notesInFlow": false,
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "custom",
+        "customResource": "product.template",
+        "operation": "getAll",
+        "options": {
+          "fieldsList": "={{ ['df_article_type','country_of_origin'] }}"
+        },
+        "filterRequest": {
+          "filter": [
+            {
+              "fieldName": "write_date",
+              "operator": "greaterThen",
+              "value": "='2025-06-20 00:00:00'"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.odoo",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        4515
+      ],
+      "id": "51a5ad95-4a8e-47dd-bab9-750c265e2185",
+      "name": "Recente wijnen",
+      "notesInFlow": false,
+      "credentials": {
+        "odooApi": {
+          "id": "OB5HP2iMmSdcYBr8",
+          "name": "Boir production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://boir-shop.myshopify.com/admin/api/2024-07/graphql.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"mutation updateProductDescription($input: ProductInput!) { productUpdate(input: $input) { product { id } userErrors { field message } } }\",\n  \"variables\": {\n    \"input\": {\n      \"id\": \"gid://shopify/Product/{{$json.mk_id}}\",\n      \"descriptionHtml\": {{JSON.stringify($json.description_sale.trim())}}\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2020,
+        3020
+      ],
+      "id": "d8f13339-abee-433e-8954-5ecd4cdba4b9",
+      "name": "save description",
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {
+    "WebhookMulti": [
+      {
+        "json": {
+          "headers": {
+            "host": "dataforgebe.app.n8n.cloud",
+            "user-agent": "python-requests/2.25.1",
+            "content-length": "19",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "authorization": "Basic ZGF0YWZvcmdlOkRhdGFGb3JnZVRlYW0wMQ==",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "34.78.202.88",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "BE",
+            "cf-ray": "9c60f80ed2696cdf-CDG",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "34.78.202.88, 104.23.229.107",
+            "x-forwarded-host": "dataforgebe.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-36-bc488dfd9-mrt4q",
+            "x-is-trusted": "yes",
+            "x-real-ip": "34.78.202.88"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "prodIds": [
+              7773
+            ]
+          },
+          "webhookUrl": "https://dataforgebe.app.n8n.cloud/webhook/ef5ae496-0f26-4917-b65f-84b2c281648e",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Uid ophalen Odoo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wijn profiel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Article subtype",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get all mk info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get aromas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get product tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Grape variety",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Test wijn HC1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML": {
+      "main": [
+        [
+          {
+            "node": "All country FR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uid ophalen Odoo": {
+      "main": [
+        [
+          {
+            "node": "Uid filter (regex)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uid filter (regex)": {
+      "main": [
+        [
+          {
+            "node": "Country FR ophalen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Country EN ophalen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dropdown waardes NL ophalen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dropdown waardes FR ophalen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Country NL ophalen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Country FR ophalen": {
+      "main": [
+        [
+          {
+            "node": "XML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Country EN ophalen": {
+      "main": [
+        [
+          {
+            "node": "XML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML1": {
+      "main": [
+        [
+          {
+            "node": "All country EN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get product tags": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Get aromas": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Wijn profiel": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Article subtype": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Get all mk info": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Alle nodige data van Odoo samengooien": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grape variety": {
+      "main": [
+        [
+          {
+            "node": "Get tax",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tax": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Dropdown waardes NL ophalen": {
+      "main": [
+        [
+          {
+            "node": "XML2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dropdown waardes FR ophalen": {
+      "main": [
+        [
+          {
+            "node": "XML3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML2": {
+      "main": [
+        [
+          {
+            "node": "All dropdown NL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML3": {
+      "main": [
+        [
+          {
+            "node": "All dropdown FR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All country FR": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "All country EN": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "All dropdown NL": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "All dropdown FR": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Transformeren voor Shopify": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Decide insert or update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Metafields def",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "Metafields def": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide insert or update": {
+      "main": [
+        [
+          {
+            "node": "Transformeren naar graphql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onnodige runs eruit halen": {
+      "main": [
+        [
+          {
+            "node": "Transformeren voor Shopify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Metafields ophalen 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mk varianten ophalen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "save description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transformeren naar graphql": {
+      "main": [
+        [
+          {
+            "node": "Routen delete of insert/update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Routen delete of insert/update": {
+      "main": [
+        [
+          {
+            "node": "Splitsen in batches1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Splitsen in batches": {
+      "main": [
+        [
+          {
+            "node": "Einde",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Rest query I/U opbouwen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Splitsen in batches1": {
+      "main": [
+        [
+          {
+            "node": "Einde",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rest query delete opbouwen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rest query I/U opbouwen": {
+      "main": [
+        [
+          {
+            "node": "Insert/update uitvoeren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rest query delete opbouwen": {
+      "main": [
+        [
+          {
+            "node": "Delete uitvoeren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete uitvoeren": {
+      "main": [
+        [
+          {
+            "node": "Splitsen in batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert/update uitvoeren": {
+      "main": [
+        [
+          {
+            "node": "Splitsen in batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Uid ophalen Odoo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get up te daten wijnen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wijn profiel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Article subtype",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get all mk info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get aromas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get product tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Grape variety",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einde": {
+      "main": [
+        [
+          {
+            "node": "Eindrapport maken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get up te daten wijnen": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Producten zonder MK id eruit halen": {
+      "main": [
+        [
+          {
+            "node": "Onnodige runs eruit halen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Onnodige runs eruit halen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Metafields ophalen 2": {
+      "main": [
+        [
+          {
+            "node": "Items met MK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MkNotFound": {
+      "main": [
+        [
+          {
+            "node": "Einde",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Producten zonder MK id eruit halen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onnodige runs eruit halen1": {
+      "main": [
+        [
+          {
+            "node": "MkNotFound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mk ids die niet bestaan in Odoo eruit halen": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        []
+      ]
+    },
+    "Items met MK": {
+      "main": [
+        [
+          {
+            "node": "Mk ids die niet bestaan in Odoo eruit halen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eindrapport maken": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uid filter (regex)1": {
+      "main": [
+        [
+          {
+            "node": "Multiple products ophalen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uid ophalen Odoo1": {
+      "main": [
+        [
+          {
+            "node": "Uid filter (regex)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multiple products ophalen": {
+      "main": [
+        [
+          {
+            "node": "Transform to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Splitsen in batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebhookMulti": {
+      "main": [
+        [
+          {
+            "node": "Uid ophalen Odoo1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Uid ophalen Odoo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wijn profiel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Article subtype",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get all mk info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get aromas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get product tags",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Grape variety",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform to JSON": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mk varianten ophalen": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Odoo": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Odoo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML4": {
+      "main": [
+        [
+          {
+            "node": "All country NL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Country NL ophalen": {
+      "main": [
+        [
+          {
+            "node": "XML4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All country NL": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Recente wijnen": {
+      "main": [
+        []
+      ]
+    },
+    "Test wijn HC1": {
+      "main": [
+        [
+          {
+            "node": "Alle nodige data van Odoo samengooien",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save description": {
+      "main": [
+        [
+          {
+            "node": "Einde",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ab694dcb-d139-41df-9971-c604b45030b6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c14adc685684de041f3900836efcffd9d9467cb376265072df116c992df85748"
+  },
+  "id": "DVDXEJpuOP3VHVf0",
+  "tags": []
+}
