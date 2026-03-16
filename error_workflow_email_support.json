@@ -1,0 +1,213 @@
+{
+  "name": "Error Handler - Email to Support",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        300
+      ],
+      "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract error details from the Error Trigger output\nconst execution = $json.execution || {};\nconst workflow = $json.workflow || {};\n\n// Get error info\nconst errorMessage = execution.error?.message || 'Unknown error';\nconst errorDescription = execution.error?.description || '';\nconst errorStack = execution.error?.stack || '';\nconst errorNode = execution.lastNodeExecuted || 'Unknown node';\n\n// Get workflow info\nconst workflowId = workflow.id || 'N/A';\nconst workflowName = workflow.name || 'Unknown workflow';\n\n// Get execution info\nconst executionId = execution.id || 'N/A';\nconst executionMode = execution.mode || 'N/A';\nconst executionUrl = execution.url || '';\nconst retryOf = execution.retryOf || '';\n\n// Timestamp\nconst timestamp = new Date().toLocaleString('nl-BE', {\n  timeZone: 'Europe/Brussels',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  second: '2-digit'\n});\n\n// Build the email subject\nconst subject = `[n8n ERROR] ${workflowName} - Failed at node: ${errorNode}`;\n\n// Build the HTML email body\nconst htmlBody = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f7; }\n    .container { max-width: 640px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }\n    .header { background-color: #d32f2f; color: #ffffff; padding: 24px 32px; }\n    .header h1 { margin: 0; font-size: 22px; font-weight: 600; }\n    .header p { margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; }\n    .content { padding: 28px 32px; color: #333333; }\n    .section { margin-bottom: 24px; }\n    .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888888; margin-bottom: 10px; border-bottom: 1px solid #eeeeee; padding-bottom: 6px; }\n    .info-table { width: 100%; border-collapse: collapse; }\n    .info-table td { padding: 8px 0; vertical-align: top; font-size: 14px; }\n    .info-table td:first-child { font-weight: 600; color: #555555; width: 140px; white-space: nowrap; }\n    .info-table td:last-child { color: #222222; }\n    .error-box { background-color: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #d32f2f; border-radius: 4px; padding: 16px; margin-top: 8px; }\n    .error-message { font-size: 15px; font-weight: 600; color: #b91c1c; margin-bottom: 8px; }\n    .error-description { font-size: 13px; color: #7f1d1d; }\n    .stack-trace { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; white-space: pre-wrap; word-break: break-all; margin-top: 8px; max-height: 300px; }\n    .btn { display: inline-block; background-color: #d32f2f; color: #ffffff; text-decoration: none; padding: 10px 24px; border-radius: 4px; font-size: 14px; font-weight: 600; margin-top: 8px; }\n    .btn:hover { background-color: #b71c1c; }\n    .footer { background-color: #f9fafb; padding: 16px 32px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }\n    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }\n    .badge-error { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }\n    .badge-mode { background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>&#9888; Workflow Execution Failed</h1>\n      <p>${workflowName}</p>\n    </div>\n    <div class=\"content\">\n\n      <div class=\"section\">\n        <div class=\"section-title\">Workflow Details</div>\n        <table class=\"info-table\">\n          <tr><td>Workflow</td><td><strong>${workflowName}</strong></td></tr>\n          <tr><td>Workflow ID</td><td>${workflowId}</td></tr>\n          <tr><td>Execution ID</td><td>${executionId}</td></tr>\n          <tr><td>Mode</td><td><span class=\"badge badge-mode\">${executionMode}</span></td></tr>\n          <tr><td>Failed Node</td><td><span class=\"badge badge-error\">${errorNode}</span></td></tr>\n          <tr><td>Timestamp</td><td>${timestamp}</td></tr>\n          ${retryOf ? '<tr><td>Retry Of</td><td>' + retryOf + '</td></tr>' : ''}\n        </table>\n      </div>\n\n      <div class=\"section\">\n        <div class=\"section-title\">Error Details</div>\n        <div class=\"error-box\">\n          <div class=\"error-message\">${errorMessage}</div>\n          ${errorDescription ? '<div class=\"error-description\">' + errorDescription + '</div>' : ''}\n        </div>\n      </div>\n\n      ${errorStack ? '<div class=\"section\"><div class=\"section-title\">Stack Trace</div><div class=\"stack-trace\">' + errorStack.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div></div>' : ''}\n\n      ${executionUrl ? '<div class=\"section\"><a href=\"' + executionUrl + '\" class=\"btn\">View Execution in n8n</a></div>' : ''}\n\n    </div>\n    <div class=\"footer\">\n      <p>This is an automated error notification from n8n &bull; Data Forge</p>\n      <p>Sent to support@data-forge.be</p>\n    </div>\n  </div>\n</body>\n</html>\n`;\n\n// Build plain text version for email clients that don't support HTML\nconst textBody = [\n  '=== N8N WORKFLOW ERROR ===' ,\n  '',\n  'WORKFLOW DETAILS',\n  `  Workflow: ${workflowName}`,\n  `  Workflow ID: ${workflowId}`,\n  `  Execution ID: ${executionId}`,\n  `  Mode: ${executionMode}`,\n  `  Failed Node: ${errorNode}`,\n  `  Timestamp: ${timestamp}`,\n  retryOf ? `  Retry Of: ${retryOf}` : '',\n  '',\n  'ERROR DETAILS',\n  `  Message: ${errorMessage}`,\n  errorDescription ? `  Description: ${errorDescription}` : '',\n  '',\n  errorStack ? 'STACK TRACE' : '',\n  errorStack ? errorStack : '',\n  '',\n  executionUrl ? `View execution: ${executionUrl}` : '',\n  '',\n  '---',\n  'Automated error notification from n8n - Data Forge'\n].filter(line => line !== '').join('\\n');\n\nreturn {\n  subject,\n  htmlBody,\n  textBody,\n  errorMessage,\n  errorNode,\n  workflowName,\n  workflowId,\n  executionId,\n  executionMode,\n  timestamp\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        300
+      ],
+      "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+      "name": "Format Error Details"
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@data-forge.be",
+        "toEmail": "support@data-forge.be",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.htmlBody }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        300
+      ],
+      "id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+      "name": "Send Error Email",
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP - Data Forge Support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "condition-repeated-error",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              },
+              "leftValue": "={{ $json.execution.retryOf }}",
+              "rightValue": ""
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        540
+      ],
+      "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80",
+      "name": "Is Retry Failure?"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Log that this is a repeated failure (retry also failed)\nconst execution = $input.first().json.execution || {};\nconst workflow = $input.first().json.workflow || {};\n\nconst workflowName = workflow.name || 'Unknown';\nconst executionId = execution.id || 'N/A';\nconst retryOf = execution.retryOf || 'N/A';\n\nconst timestamp = new Date().toLocaleString('nl-BE', {\n  timeZone: 'Europe/Brussels'\n});\n\nreturn {\n  subject: `[n8n CRITICAL] ${workflowName} - Retry also failed!`,\n  htmlBody: `\n    <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto;\">\n      <div style=\"background: #7f1d1d; color: white; padding: 20px; border-radius: 8px 8px 0 0;\">\n        <h2 style=\"margin:0;\">&#128680; CRITICAL: Retry Failed</h2>\n      </div>\n      <div style=\"padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 0 0 8px 8px;\">\n        <p>A retry execution for workflow <strong>${workflowName}</strong> has also failed.</p>\n        <p><strong>Current Execution:</strong> ${executionId}</p>\n        <p><strong>Original Execution:</strong> ${retryOf}</p>\n        <p><strong>Time:</strong> ${timestamp}</p>\n        <p style=\"color: #b91c1c; font-weight: bold;\">This issue requires immediate attention as automatic retry did not resolve the problem.</p>\n      </div>\n    </div>\n  `\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        500
+      ],
+      "id": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8091",
+      "name": "Format Critical Alert"
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@data-forge.be",
+        "toEmail": "support@data-forge.be",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.htmlBody }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        600,
+        500
+      ],
+      "id": "f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f809102",
+      "name": "Send Critical Alert Email",
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP - Data Forge Support"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        340,
+        600
+      ],
+      "id": "a7b8c9d0-e1f2-4a3b-4c5d-6e7f80910213",
+      "name": "First Failure (No Action Needed)"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Error Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Retry Failure?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error Details": {
+      "main": [
+        [
+          {
+            "node": "Send Error Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Retry Failure?": {
+      "main": [
+        [
+          {
+            "node": "Format Critical Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "First Failure (No Action Needed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Critical Alert": {
+      "main": [
+        [
+          {
+            "node": "Send Critical Alert Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00000000-0000-0000-0000-000000000001",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  },
+  "id": "",
+  "tags": [
+    {
+      "name": "error-handling"
+    },
+    {
+      "name": "support"
+    }
+  ]
+}
