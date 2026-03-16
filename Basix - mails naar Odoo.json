@@ -435,7 +435,8 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "loose",
-            "version": 2
+            "version": 2,
+            "looseTypeValidation": true
           },
           "conditions": [
             {
