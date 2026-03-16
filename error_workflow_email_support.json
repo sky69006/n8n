@@ -28,16 +28,17 @@
     },
     {
       "parameters": {
-        "sendTo": "support@data-forge.be",
+        "fromEmail": "noreply@data-forge.be",
+        "toEmail": "support@data-forge.be",
         "subject": "={{ $json.subject }}",
-        "emailType": "html",
+        "emailFormat": "html",
         "html": "={{ $json.htmlBody }}",
         "options": {
           "appendAttribution": false
         }
       },
-      "type": "n8n-nodes-base.sendEmail",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
       "position": [
         80,
         300
@@ -97,16 +98,17 @@
     },
     {
       "parameters": {
-        "sendTo": "support@data-forge.be",
+        "fromEmail": "noreply@data-forge.be",
+        "toEmail": "support@data-forge.be",
         "subject": "={{ $json.subject }}",
-        "emailType": "html",
+        "emailFormat": "html",
         "html": "={{ $json.htmlBody }}",
         "options": {
           "appendAttribution": false
         }
       },
-      "type": "n8n-nodes-base.sendEmail",
-      "typeVersion": 1.1,
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
       "position": [
         600,
         500
