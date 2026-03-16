@@ -1,0 +1,726 @@
+{
+  "name": "Basix - mails naar Odoo",
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "inbox",
+        "downloadAttachments": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        192
+      ],
+      "id": "e4526217-5c90-4ee9-9688-1a05a232ba0f",
+      "name": "Email Trigger (IMAP)",
+      "notesInFlow": true,
+      "credentials": {
+        "imap": {
+          "id": "3YcV0kK8OIyH6Xui",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Access the current item\nconst item = $input.item;\nconst text = item.json.textHtml;\n\nfunction extractValue(label) {\n  const regex = new RegExp(label + \"[:]?\\\\s*(.*?)(<br|$)\", \"i\");\n  const match = text.match(regex);\n  return match ? match[1].trim() : null;\n}\n\nitem.json.subject = item.json.subject.replace(/^\\[SPAM ?\\] ?/, '')\n// Extract fields\nitem.json.naam = extractValue(\"Naam\");\nitem.json.email = extractValue(\"E-mailadres\");\nitem.json.telefoonnummer = extractValue(\"Telefoonnummer\");\nitem.json.adres = extractValue(\"Adres\");\nitem.json.functie = extractValue(\"functies\");\n//item.json.dbUrl = \"https://dataforge-basix18-staging-21422324.dev.odoo.com/\"\n//item.json.dbLogin = \"info@data-forge.be\"\n//item.json.dbPw = \"DataForgeTeam01\"\n//item.json.dbName = \"dataforge-basix18-staging-21422324\"\nitem.json.dbUrl = \"https://dataforge-basix18.odoo.com/\"\nitem.json.dbLogin = \"balder@basixafsluitingen.be\"\nitem.json.dbPw = \"4c2413fc9b79f701a08358ba1a2a8d5017f7735f\"\nitem.json.dbName = \"pivotal-dataforge-basix18-basix-15727765\"\n\n//item.json.dbUid = 6\nitem.json.dbUid = 2\nitem.json.messageId = $json.metadata['message-id']\n\n// Extract Bericht (everything after 'Bericht:')\nconst berichtMatch = text.match(/Bericht:([\\s\\S]*)/i);\nitem.json.bericht = berichtMatch ? berichtMatch[1]\n  .replace(/<br\\s*\\/?>/gi, \"\\n\")   // convert <br> to line breaks\n  .replace(/<\\/?[^>]+(>|$)/g, \"\")  // strip other HTML tags\n  .trim() : null;\n\nreturn item;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        0
+      ],
+      "id": "da4edaa3-7dc2-4073-bc32-4487a4fdf9ea",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "71a6de25-c327-43e7-9723-9c5007a1e9de",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "Sollicitatie basixafsluitingen.be",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "e760085a-0684-4b52-9e74-5e1332e54cc8",
+      "name": "Is sollicitatie"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "\n\n{\n\"url\": \n\"https://dataforge-basix18-staging-21422324.dev.odoo.com/\",\n\"login\": \n\"info@data-forge.be\",\n\"pw\": \n\"DataForgeTeam01\",\n\"db\": \n\"dataforge-basix18-staging-21422324\",\n\"uid\": \n\"6\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        608
+      ],
+      "id": "84fd1663-3493-4a63-a730-b30f1ea23e86",
+      "name": "Set db info"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const candidateFields = {\n  partner_name: $input.item.json.naam,\n  partner_phone: $input.item.json.telefoonnummer,\n  email_from: $input.item.json.email,\n};\n\n// Remove any null/undefined/empty values\nfor (const key in candidateFields) {\n  if (\n    candidateFields[key] === null ||\n    candidateFields[key] === undefined ||\n    candidateFields[key] === \"\"\n  ) {\n    delete candidateFields[key];\n  }\n}\n\n$input.item.json.candidate_fields = candidateFields;\n\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        0
+      ],
+      "id": "25ec6e29-14ba-40d2-9652-fc0e769d9fe4",
+      "name": "Make candidate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={   \"jsonrpc\": \"2.0\",   \"method\": \"call\",   \"params\": {     \"service\": \"object\",     \"method\": \"execute_kw\",     \"args\": [       \"{{ $json.dbName }}\", {{ $json.dbUid }}      ,       \"{{ $json.dbPw }}\",     \"hr.candidate\",       \"create\",               [{{ JSON.stringify($json.candidate_fields) }}]     ]   },   \"id\": 1 }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "f8ddbd1b-cbc2-404a-a859-28725d0471de",
+      "name": "Insert candidate"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Build hr.applicant object for Odoo\nconst applicant = {\n  candidate_id: $('Insert candidate').item.json.result,   // assuming 'id' comes from the \"Insert candidate\" step\n  partner_name: $('Code').item.json.naam,\n  partner_phone: $('Code').item.json.telefoonnummer,\n  email_from: $('Code').item.json.email,\n    applicant_notes: $('Code').item.json.textHtml,\n    job_id: $json.result[0],\n  stage_id: 1\n};\n\n// Remove empty values\nfor (const key in applicant) {\n  if (\n    applicant[key] === null ||\n    applicant[key] === undefined ||\n    applicant[key] === \"\"\n  ) {\n    delete applicant[key];\n  }\n}\n\n$input.item.json[\"hr.applicant\"] = applicant;\n\nreturn $input.item;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        0
+      ],
+      "id": "9d199ee3-af46-4695-b7d3-88dbe195cf17",
+      "name": "Make applicant"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=      {   \"jsonrpc\": \"2.0\",   \"method\": \"call\",   \"params\": {     \"service\": \"object\",     \"method\": \"execute_kw\",     \"args\": [       \"{{ $('Code').item.json.dbName }}\", {{ $('Code').item.json.dbUid }}      ,       \"{{ $('Code').item.json.dbPw }}\",     \"hr.applicant\",       \"create\",               [{{ JSON.stringify($json['hr.applicant']) }}]     ]   },   \"id\": 1 }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "1add6838-8eda-4fda-8fb9-2335308050c9",
+      "name": "Insert applicant"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/var/lib/n8n/files/{{$binary.attachment_0.fileName }}",
+        "dataPropertyName": "attachment_0",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        752,
+        384
+      ],
+      "id": "4ec073d0-9e8c-4bfe-9e90-3f999845dac7",
+      "name": "Read/Write Files from Disk",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        976,
+        384
+      ],
+      "id": "bf346854-7acd-4ede-83d4-cdf4b1520b44",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "messageId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1424,
+        0
+      ],
+      "id": "4ef793a2-52a6-43eb-b319-962bf1c5fad7",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "941606a7-29bf-4f66-b0c0-50f0f9b7b14f",
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "Contactformulier basixafsluitingen.be",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        192
+      ],
+      "id": "6f2f2a28-9610-454f-8780-34d31c821379",
+      "name": "If is mail formulier"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Get the textHtml field safely\nconst html = $input.item.json.textHtml || '';\n\n// Return early if there's no HTML to parse\nif (!html || typeof html !== 'string') {\n  return [{ error: 'No textHtml provided or not a valid string' }];\n}\n\n// Helper to extract values from the HTML using label\nfunction extract(label) {\n  const regex = new RegExp(label + ':\\\\s*(.*?)<br>', 'i');\n  const match = html.match(regex);\n  return match ? match[1].trim() : null;\n}\n\n// Extract key fields from the email HTML\nconst name = extract('Naam');\nconst email = extract('e-mailadres');\nconst phone = extract('Telefoonnummer');\nconst street = extract('Straat');\nconst zip = extract('Postcode');\nconst message = extract('Bericht');\nconst street_number = extract('Straatnr');\n\n// Build raw lead object\nconst rawLead = {\n  name: name ? `Contact from ${name}` : null,\n  contact_name: name,\n  email_from: email,\n  phone: phone,\n  street: street + ', ' + street_number,\n  zip: zip,\n  description: message,\n  type: 'opportunity',\n  partner_name: name,\n  source_id: 10,\n  user_id: 10\n};\n\n// Clean the lead object: remove empty/null/undefined values\nconst lead = {};\nfor (const key in rawLead) {\n  if (rawLead[key] !== null && rawLead[key] !== undefined && rawLead[key] !== '') {\n    lead[key] = rawLead[key];\n  }\n}\n\n// Return the clean object\nreturn lead;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        192
+      ],
+      "id": "1a7ad844-1134-4668-a920-b0b782ceae74",
+      "name": "Make lead JSON"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={   \"jsonrpc\": \"2.0\",   \"method\": \"call\",   \"params\": {     \"service\": \"object\",     \"method\": \"execute_kw\",     \"args\": [       \"{{ $('If is mail formulier').item.json.dbName }}\", {{ $('If is mail formulier').item.json.dbUid }}      ,       \"{{ $('If is mail formulier').item.json.dbPw }}\",     \"crm.lead\",       \"create\",               [{{ JSON.stringify($input.item.json) }}]     ]   },   \"id\": 1 }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        192
+      ],
+      "id": "0113927f-5634-480e-9e1c-675e4fef9b8b",
+      "name": "Insert lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"call\",\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\n      \"{{ $('Code').item.json.dbName }}\",\n      {{ $('Code').item.json.dbUid }},\n      \"{{ $('Code').item.json.dbPw }}\",\n      \"ir.attachment\",\n      \"create\",\n      [\n        {\n          \"name\": \"{{ $json.fileName }}\",\n          \"datas\": \"{{ $('Extract from File').item.json.data }}\",\n          \"res_model\": \"hr.applicant\",\n          \"res_id\": {{ $json.result }}\n        }\n      ]\n    ]\n  },\n  \"id\": 1\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "4b658078-ad0d-4d47-8426-dfa6e45f57bc",
+      "name": "Insert attachment applicant"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "messageId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        288
+      ],
+      "id": "4d85cc5a-d034-4ad6-a5f3-dd4e602a42a4",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$input.item.json.messageId = $('Make candidate').item.json.metadata[\"message-id\"]\n\nreturn $input.item"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "4ac7c388-0a72-42b4-a143-1e2e08a9d6f4",
+      "name": "add MessageId"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$input.item.json.messageId = $('Read/Write Files from Disk').item.json.metadata['message-id']\n$input.item.json.fileName =  $('Read/Write Files from Disk').item.json.fileName\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        384
+      ],
+      "id": "cbafa182-97b6-4185-918e-6ba24b5fb9be",
+      "name": "add message id and filename"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\n$input.item.json.messageId = $('If is mail formulier').item.json.messageId\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        192
+      ],
+      "id": "97baf024-c8b5-4ce7-81ea-059ba48604fd",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"call\",\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\n      \"{{ $('Code').item.json.dbName }}\",\n      {{ $('Code').item.json.dbUid }},\n      \"{{ $('Code').item.json.dbPw }}\",\n      \"ir.attachment\",\n      \"create\",\n      [\n        {\n          \"name\": \"{{ $json.fileName }}\",\n          \"datas\": \"{{ $('Extract from File').item.json.data }}\",\n          \"res_model\": \"crm.lead\",\n          \"res_id\": {{ $json.result }}\n        }\n      ]\n    ]\n  },\n  \"id\": 1\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        288
+      ],
+      "id": "66e2feea-aed4-4122-9629-75c241f57e34",
+      "name": "Insert attachment lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"call\",\n  \"params\": {\n    \"service\": \"object\",\n    \"method\": \"execute_kw\",\n    \"args\": [\n      \"{{ $('Make candidate').item.json.dbName }}\",\n      {{ $('Make candidate').item.json.dbUid }},\n      \"{{ $('Make candidate').item.json.dbPw }}\",\n      \"hr.job\",\n      \"search\",\n      [\n        [\n          [\n            \"x_studio_omschrijving_website\",\n            \"=ilike\",\n            \"{{ $('Is sollicitatie').item.json.functie || 'fmaefmlekafmkl' }}\"\n          ]\n        ]\n      ]\n    ]\n  },\n  \"id\": 1\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        0
+      ],
+      "id": "512f6deb-5066-4387-9698-9fbf3ecb1ba2",
+      "name": "Find job"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$('Code').item.json.dbUrl }}jsonrpc",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={   \"jsonrpc\": \"2.0\",   \"method\": \"call\",   \"params\": {     \"service\": \"object\",     \"method\": \"execute_kw\",     \"args\": [       \"{{ $('If is mail formulier').item.json.dbName }}\", {{ $('If is mail formulier').item.json.dbUid }}      ,       \"{{ $('If is mail formulier').item.json.dbPw }}\",     \"res.partner\",       \"create\",               [{{ JSON.stringify($('Make contact').item.json) }}]     ]   },   \"id\": 1 }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        192
+      ],
+      "id": "528c30ad-3648-4058-9ada-1159dc3ca23c",
+      "name": "Insert contact"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Access the current item\nconst data = $json;\n\nlet partner = {\n  name: data.contact_name || data.name,\n  email: data.email_from,\n  phone: data.phone,\n  street: data.street,\n  zip: data.zip,\n  city: data.city,\n  is_company: false\n};\n\n// Remove keys with null, undefined, or empty string values\npartner = Object.fromEntries(\n  Object.entries(partner).filter(([_, v]) => v !== null && v !== undefined && v !== \"\")\n);\n\n// Return the transformed item\nreturn { json: partner };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        192
+      ],
+      "id": "ac99abf4-e9ca-43d2-8274-cfc05d312558",
+      "name": "Make contact"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "$leadinfo = $('Make lead JSON').item.json\n$leadinfo.partner_id = $json.result \nreturn $leadinfo"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        192
+      ],
+      "id": "789b8940-232a-4f8d-ac40-ba9d8adea797",
+      "name": "Add partner id"
+    }
+  ],
+  "pinData": {
+    "Email Trigger (IMAP)": [
+      {
+        "json": {
+          "textHtml": "Naam: Thomas Mestdagh<br>E-mailadres: thomasmestdagh@live.com<br>Telefoonnummer: <br>Straat: Pieter de coninckstraat<br>Straatnr: 1<br>Postcode: 8870<br>Bericht: Beste,<br /><br />Wij zouden graag onze omheining in de achtertuin vernieuwen. Breken jullie ook oude omheiningen af? <br /><br />Mvg,<br />Thomas Mestdagh<br>Bijlage toevoegen: <br>Akkoord: on<br>\r\n<br>---<br><br>Date: 12 maart 2026<br>Time: 13:29<br>Page URL: https://basixafsluitingen.be/particulieren/#contact<br>User Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/145.0.7632.108 Mobile/15E148 Safari/604.1<br>Remote IP: 178.118.75.190<br>Powered by: Elementor<br>\r\n\r\n",
+          "textPlain": "",
+          "metadata": {
+            "return-path": "<basixafsluitingenbe@webhosting.be>",
+            "delivered-to": "hr@basix.data-forge.be",
+            "received": "from srv02.data-forge.be (localhost [127.0.0.1])\tby srv02.data-forge.be (Postfix) with ESMTP id 4fWpP25QFTz25ns\tfor <hr@basix.data-forge.be>; Thu, 12 Mar 2026 13:29:10 +0000 (UTC)",
+            "x-virus-scanned": "Debian amavisd-new at srv02.data-forge.be",
+            "x-php-originating-script": "134006:PHPMailer.php",
+            "reply-to": "thomasmestdagh@live.com",
+            "message-id": "<5ullsj5ssf5Un4iR4T03xZ5otlxPSNOWlynaXqJaQw@basixafsluitingen.be>",
+            "x-mailer": "PHPMailer 7.0.0 (https://github.com/PHPMailer/PHPMailer)",
+            "mime-version": "1.0",
+            "content-type": "text/html; charset=UTF-8"
+          },
+          "attributes": {
+            "uid": 174
+          },
+          "to": "els@basixafsluitingen.be, hr@basix.data-forge.be, annelies@damc.be",
+          "subject": "Contactformulier basixafsluitingen.be",
+          "date": "Thu, 12 Mar 2026 13:29:02 +0000",
+          "from": "Basix <email@basixafsluitingen.be>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Is sollicitatie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is sollicitatie": {
+      "main": [
+        [
+          {
+            "node": "Make candidate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If is mail formulier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make candidate": {
+      "main": [
+        [
+          {
+            "node": "Insert candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert candidate": {
+      "main": [
+        [
+          {
+            "node": "Find job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make applicant": {
+      "main": [
+        [
+          {
+            "node": "Insert applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert applicant": {
+      "main": [
+        [
+          {
+            "node": "add MessageId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "add message id and filename",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Insert attachment applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If is mail formulier": {
+      "main": [
+        [
+          {
+            "node": "Make lead JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make lead JSON": {
+      "main": [
+        [
+          {
+            "node": "Make contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert lead": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add MessageId": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add message id and filename": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Insert attachment lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find job": {
+      "main": [
+        [
+          {
+            "node": "Make applicant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert contact": {
+      "main": [
+        [
+          {
+            "node": "Add partner id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make contact": {
+      "main": [
+        [
+          {
+            "node": "Insert contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add partner id": {
+      "main": [
+        [
+          {
+            "node": "Insert lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "6a09b328-e534-4120-83db-9ddde63a66d6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2c973065fd3d3b659db7d2e1e38558a6a24acfe40a791d91cd83f607a18f9688"
+  },
+  "id": "eg-cZbmOasF5otDTOA6jV",
+  "tags": []
+}
